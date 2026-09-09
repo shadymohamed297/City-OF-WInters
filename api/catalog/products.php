@@ -12,7 +12,7 @@ $categorySlug = $_GET['category_slug'] ?? null;
 $featured = isset($_GET['featured']);
 $bestseller = isset($_GET['bestseller']);
 $newArrival = isset($_GET['new_arrival']);
-$limit = isset($_GET['limit']) ? (int) $_GET['limit'] : 200;
+$limit = isset($_GET['limit']) ? (int) $_GET['limit'] : ($categorySlug ? 16 : 200);
 $limit = max(1, min(200, $limit));
 
 $sql = 'SELECT id, slug, title_ar, title_en, author_ar, author_en, publisher_ar, publisher_en, description_ar, description_en, price, compare_at_price, cover_url, category_id, pages, isbn, rating, reviews_count, stock, unlimited_stock, is_active, is_bestseller, is_new_arrival, is_featured, display_order, created_at FROM products WHERE is_active = 1';
