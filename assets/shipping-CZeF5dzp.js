@@ -1,0 +1,1 @@
+import{l as i}from"./index-Dmn91ErK.js";import{P as p}from"./PolicyPage-DDAX4q3h.js";const t=()=>i.jsx(p,{arField:"shipping_policy_ar",enField:"shipping_policy_en",titleAr:"الشحن والتوصيل",titleEn:"Shipping & Delivery"});export{t as component};

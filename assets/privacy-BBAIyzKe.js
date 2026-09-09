@@ -1,0 +1,1 @@
+import{l as i}from"./index-Dmn91ErK.js";import{P as o}from"./PolicyPage-DDAX4q3h.js";const e=()=>i.jsx(o,{arField:"privacy_policy_ar",enField:"privacy_policy_en",titleAr:"سياسة الخصوصية",titleEn:"Privacy Policy"});export{e as component};
