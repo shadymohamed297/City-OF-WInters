@@ -1,0 +1,67 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # API - let through
+  RewriteRule ^api/ - [L]
+
+  # Migration script - let through
+  RewriteRule ^migrate-from-supabase\.php$ - [L]
+
+  # Sitemap - serve from PHP API (must come before the -f/-d passthrough
+  # since sitemap.xml is not a real file on disk)
+  RewriteRule ^sitemap\.xml$ /api/sitemap.php [L]
+
+  # Allow direct access to real files and directories (assets, hero, etc.)
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # SPA fallback - serve index.html for all other (client-side) routes
+  RewriteRule ^ /index.html [L]
+</IfModule>
+
+# Default document when a folder is requested directly
+DirectoryIndex index.html
+
+# Ensure JS modules are served with the correct MIME type (some hosts
+# default to text/plain, which breaks dynamic import()/code-splitting
+# and triggers repeated auto-reloads in the SPA router).
+<IfModule mod_mime.c>
+  AddType application/javascript .js .mjs
+  AddType text/css .css
+</IfModule>
+
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+  Header set X-Frame-Options "SAMEORIGIN"
+  Header set X-XSS-Protection "1; mode=block"
+</IfModule>
+
+# --- Block public access to sensitive files ---
+# NOTE: migrate-from-supabase.php is intentionally NOT in this list right
+# now because it is still needed once via the browser (with ?secret=...).
+# Add it back to this list (or just delete the file) the moment the
+# one-time data migration is confirmed successful.
+<FilesMatch "^(\.env|composer\.(json|lock)|test.*\.php)$">
+  Require all denied
+</FilesMatch>
+
+<IfModule mod_rewrite.c>
+  RewriteRule ^lib/ - [F,L]
+  RewriteRule ^migration/ - [F,L]
+  RewriteRule ^vendor/ - [F,L]
+</IfModule>
+
+# Cache static assets
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/jpg "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType image/gif "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+  ExpiresByType font/woff2 "access plus 1 year"
+</IfModule>
