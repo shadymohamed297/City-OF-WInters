@@ -42,8 +42,25 @@ if ($ip && !$isPrivate) {
 
 $gulfCountries = ['SA', 'AE', 'KW', 'QA', 'BH', 'OM'];
 
+$gulfCurrencyMap = [
+    'SA' => 'SAR', 'AE' => 'AED', 'KW' => 'KWD',
+    'QA' => 'QAR', 'BH' => 'BHD', 'OM' => 'OMR',
+];
+
+if ($country === 'EG') {
+    $region   = 'egypt';
+    $currency = 'EGP';
+} elseif (in_array($country, $gulfCountries, true)) {
+    $region   = 'gulf';
+    $currency = $gulfCurrencyMap[$country] ?? 'USD';
+} else {
+    $region   = 'international';
+    $currency = 'USD';
+}
+
 Response::ok([
     'country_code' => $country,
     'country_name' => $countryName,
-    'region' => in_array($country, $gulfCountries, true) ? 'gulf' : 'egypt',
+    'region'       => $region,
+    'currency'     => $currency,
 ]);

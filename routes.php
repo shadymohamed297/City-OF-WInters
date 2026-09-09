@@ -28,6 +28,7 @@ return [
         '/admin/shipping' => __DIR__ . '/api/admin/shipping.php',
         '/admin/settings' => __DIR__ . '/api/admin/settings.php',
         '/admin/users' => __DIR__ . '/api/admin/users.php',
+        '/geo/detect' => __DIR__ . '/api/geo/detect.php',
     ],
     'POST' => [
         '/auth/login' => __DIR__ . '/api/auth/login.php',
