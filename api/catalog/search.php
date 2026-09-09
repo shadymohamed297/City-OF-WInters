@@ -31,9 +31,8 @@ if ($categorySlug !== '') {
     $stmt->execute(['slug' => $categorySlug]);
     $cat = $stmt->fetch();
     if ($cat) {
-        $sql .= ' AND (category_id = :category_id OR id IN (SELECT product_id FROM product_categories WHERE category_id = :category_id_jc))';
+        $sql .= ' AND category_id = :category_id';
         $params['category_id'] = $cat['id'];
-        $params['category_id_jc'] = $cat['id'];
     }
 }
 
