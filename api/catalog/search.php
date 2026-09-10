@@ -87,20 +87,20 @@ try {
 
         // 1. Full phrase match (normalized)
         $phraseGroup = [];
-        $pNameNorm = 'fp_norm_' . ($pIndex++);
-        $params[$pNameNorm] = '%' . $normQ . '%';
         foreach ($searchFields as $sf) {
-            $phraseGroup[] = "{$sf} LIKE :{$pNameNorm}";
+            $pName = 'fp_n_' . ($pIndex++);
+            $phraseGroup[] = "{$sf} LIKE :{$pName}";
+            $params[$pName] = '%' . $normQ . '%';
         }
         $matchOrs[] = '(' . implode(' OR ', $phraseGroup) . ')';
 
         // Full phrase raw match
         if ($rawQ !== $normQ) {
             $rawGroup = [];
-            $pNameRaw = 'fp_raw_' . ($pIndex++);
-            $params[$pNameRaw] = '%' . $rawQ . '%';
             foreach ($rawFields as $rf) {
-                $rawGroup[] = "{$rf} LIKE :{$pNameRaw}";
+                $pName = 'fp_r_' . ($pIndex++);
+                $rawGroup[] = "{$rf} LIKE :{$pName}";
+                $params[$pName] = '%' . $rawQ . '%';
             }
             $matchOrs[] = '(' . implode(' OR ', $rawGroup) . ')';
         }
@@ -110,10 +110,10 @@ try {
             $allTokenAnds = [];
             foreach ($effectiveTokens as $tok) {
                 $tokGroup = [];
-                $pNameTok = 'tok_all_' . ($pIndex++);
-                $params[$pNameTok] = '%' . $tok . '%';
                 foreach ($searchFields as $sf) {
-                    $tokGroup[] = "{$sf} LIKE :{$pNameTok}";
+                    $pName = 'tok_a_' . ($pIndex++);
+                    $tokGroup[] = "{$sf} LIKE :{$pName}";
+                    $params[$pName] = '%' . $tok . '%';
                 }
                 $allTokenAnds[] = '(' . implode(' OR ', $tokGroup) . ')';
             }
@@ -129,10 +129,10 @@ try {
             ];
             $anyTokenOrs = [];
             foreach ($effectiveTokens as $tok) {
-                $pNameAny = 'tok_any_' . ($pIndex++);
-                $params[$pNameAny] = '%' . $tok . '%';
                 foreach ($keyFields as $kf) {
-                    $anyTokenOrs[] = "{$kf} LIKE :{$pNameAny}";
+                    $pName = 'tok_any_' . ($pIndex++);
+                    $anyTokenOrs[] = "{$kf} LIKE :{$pName}";
+                    $params[$pName] = '%' . $tok . '%';
                 }
             }
             if (!empty($anyTokenOrs)) {
