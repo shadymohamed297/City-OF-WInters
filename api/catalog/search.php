@@ -2,14 +2,13 @@
 
 use App\Database;
 use App\Response;
-use App\Validator;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
 try {
     $pdo = Database::connection();
 
-    $q = trim($_GET['q'] ?? '');
+    $rawQ = trim($_GET['q'] ?? '');
     $categorySlug = trim($_GET['category_slug'] ?? '');
     $minPrice = isset($_GET['min_price']) && $_GET['min_price'] !== '' ? (float) $_GET['min_price'] : null;
     $maxPrice = isset($_GET['max_price']) && $_GET['max_price'] !== '' ? (float) $_GET['max_price'] : null;
@@ -19,46 +18,130 @@ try {
     $limit = isset($_GET['limit']) ? (int) $_GET['limit'] : 60;
     $limit = max(1, min(100, $limit));
 
-    $sql = 'SELECT id, slug, title_ar, title_en, author_ar, author_en, publisher_ar, publisher_en, description_ar, description_en, price, compare_at_price, cover_url, category_id, pages, isbn, rating, reviews_count, stock, unlimited_stock, is_active, is_bestseller, is_new_arrival, is_featured, display_order, created_at FROM products WHERE is_active = 1';
+    $sql = 'SELECT p.id, p.slug, p.title_ar, p.title_en, p.author_ar, p.author_en, p.publisher_ar, p.publisher_en, p.description_ar, p.description_en, p.price, p.compare_at_price, p.cover_url, p.category_id, p.pages, p.isbn, p.rating, p.reviews_count, p.stock, p.unlimited_stock, p.is_active, p.is_bestseller, p.is_new_arrival, p.is_featured, p.display_order, p.created_at FROM products p WHERE p.is_active = 1';
     $params = [];
 
-    if ($q !== '') {
-        // Strip common punctuation and normalize spaces
-        $cleanQ = preg_replace('/[^\p{L}\p{N}\s]/u', ' ', $q);
+    // Helper: Normalize Arabic string in PHP
+    $normalizeArabic = function (string $str): string {
+        // Strip diacritics / tashkeel
+        $str = preg_replace('/[\x{064B}-\x{065F}\x{0670}]/u', '', $str);
+        // Strip tatweel / kashida (ـ)
+        $str = preg_replace('/\x{0640}/u', '', $str);
+        // Normalize Alef variants
+        $str = preg_replace('/[إأآٱ]/u', 'ا', $str);
+        // Normalize Taa Marbouta to Haa
+        $str = preg_replace('/ة/u', 'ه', $str);
+        // Normalize Alef Maqsoura to Yaa
+        $str = preg_replace('/ى/u', 'ي', $str);
+        return $str;
+    };
+
+    if ($rawQ !== '') {
+        $cleanQ = preg_replace('/[^\p{L}\p{N}\s]/u', ' ', $rawQ);
         $cleanQ = trim(preg_replace('/\s+/u', ' ', $cleanQ));
 
-        $searchTerms = array_filter([$q, $cleanQ]);
-        $searchTerms = array_values(array_unique($searchTerms));
+        $normQ = $normalizeArabic($cleanQ);
 
-        // Generate Arabic normalization variations
-        $variations = [];
-        foreach ($searchTerms as $term) {
-            $normA = preg_replace('/[إأآ]/u', 'ا', $term);
-            if ($normA && $normA !== $term) $variations[] = $normA;
+        // SQL function to normalize Arabic in columns
+        $sqlNorm = function (string $col): string {
+            return "REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE({$col}, 'إ', 'ا'), 'أ', 'ا'), 'آ', 'ا'), 'ة', 'ه'), 'ى', 'ي'), 'ـ', '')";
+        };
 
-            $normT = preg_replace('/ة/u', 'ه', $term);
-            if ($normT && $normT !== $term) $variations[] = $normT;
+        // SQL function to normalize slugs (replaces hyphens with space)
+        $sqlNormSlug = function (string $col) use ($sqlNorm): string {
+            $n = $sqlNorm($col);
+            return "REPLACE({$n}, '-', ' ')";
+        };
 
-            $normY = preg_replace('/ى/u', 'ي', $term);
-            if ($normY && $normY !== $term) $variations[] = $normY;
+        // Columns to search
+        $searchFields = [
+            $sqlNorm('p.title_ar'),
+            $sqlNorm('p.title_en'),
+            $sqlNormSlug('p.slug'),
+            $sqlNorm('p.author_ar'),
+            $sqlNorm('p.author_en'),
+            $sqlNorm('p.publisher_ar'),
+            $sqlNorm('p.publisher_en'),
+            $sqlNorm("COALESCE(p.description_ar, '')"),
+            $sqlNorm("COALESCE(p.description_en, '')"),
+        ];
+
+        $rawFields = [
+            'p.title_ar', 'p.title_en', 'p.slug', 'p.author_ar', 'p.author_en',
+            'p.publisher_ar', 'p.publisher_en', "COALESCE(p.description_ar, '')", "COALESCE(p.description_en, '')"
+        ];
+
+        // Tokens
+        $tokens = array_values(array_filter(
+            explode(' ', $normQ),
+            fn($w) => mb_strlen(trim($w)) >= 2
+        ));
+
+        // Strip common prefix words if there are other tokens
+        $stopWords = ['كتاب', 'روايه', 'رواية', 'قصه', 'قصة', 'سلسله', 'سلسلة', 'دار', 'مكتبه', 'مكتبة', 'مجلد'];
+        $filteredTokens = array_values(array_filter($tokens, fn($w) => !in_array($w, $stopWords, true)));
+        $effectiveTokens = !empty($filteredTokens) ? $filteredTokens : $tokens;
+
+        $pIndex = 0;
+        $matchOrs = [];
+
+        // 1. Full phrase match (normalized)
+        $phraseGroup = [];
+        $pNameNorm = 'fp_norm_' . ($pIndex++);
+        $params[$pNameNorm] = '%' . $normQ . '%';
+        foreach ($searchFields as $sf) {
+            $phraseGroup[] = "{$sf} LIKE :{$pNameNorm}";
+        }
+        $matchOrs[] = '(' . implode(' OR ', $phraseGroup) . ')';
+
+        // Full phrase raw match
+        if ($rawQ !== $normQ) {
+            $rawGroup = [];
+            $pNameRaw = 'fp_raw_' . ($pIndex++);
+            $params[$pNameRaw] = '%' . $rawQ . '%';
+            foreach ($rawFields as $rf) {
+                $rawGroup[] = "{$rf} LIKE :{$pNameRaw}";
+            }
+            $matchOrs[] = '(' . implode(' OR ', $rawGroup) . ')';
         }
 
-        $allTerms = array_values(array_unique(array_merge($searchTerms, $variations)));
+        // 2. All tokens match
+        if (count($effectiveTokens) > 1) {
+            $allTokenAnds = [];
+            foreach ($effectiveTokens as $tok) {
+                $tokGroup = [];
+                $pNameTok = 'tok_all_' . ($pIndex++);
+                $params[$pNameTok] = '%' . $tok . '%';
+                foreach ($searchFields as $sf) {
+                    $tokGroup[] = "{$sf} LIKE :{$pNameTok}";
+                }
+                $allTokenAnds[] = '(' . implode(' OR ', $tokGroup) . ')';
+            }
+            $matchOrs[] = '(' . implode(' AND ', $allTokenAnds) . ')';
+        }
 
-        $qConditions = [];
-        $searchFields = ['title_ar', 'title_en', 'author_ar', 'author_en', 'publisher_ar', 'publisher_en'];
-        $idx = 0;
-
-        foreach ($allTerms as $term) {
-            foreach ($searchFields as $field) {
-                $pName = 'sq_' . $idx++;
-                $qConditions[] = "{$field} LIKE :{$pName}";
-                $params[$pName] = '%' . $term . '%';
+        // 3. Significant token match on title / slug / author
+        if (!empty($effectiveTokens)) {
+            $keyFields = [
+                $sqlNorm('p.title_ar'),
+                $sqlNormSlug('p.slug'),
+                $sqlNorm('p.author_ar'),
+            ];
+            $anyTokenOrs = [];
+            foreach ($effectiveTokens as $tok) {
+                $pNameAny = 'tok_any_' . ($pIndex++);
+                $params[$pNameAny] = '%' . $tok . '%';
+                foreach ($keyFields as $kf) {
+                    $anyTokenOrs[] = "{$kf} LIKE :{$pNameAny}";
+                }
+            }
+            if (!empty($anyTokenOrs)) {
+                $matchOrs[] = '(' . implode(' OR ', $anyTokenOrs) . ')';
             }
         }
 
-        if (!empty($qConditions)) {
-            $sql .= ' AND (' . implode(' OR ', $qConditions) . ')';
+        if (!empty($matchOrs)) {
+            $sql .= ' AND (' . implode(' OR ', $matchOrs) . ')';
         }
     }
 
@@ -67,33 +150,33 @@ try {
         $stmt->execute(['slug' => $categorySlug]);
         $cat = $stmt->fetch();
         if ($cat) {
-            $sql .= ' AND category_id = :category_id';
+            $sql .= ' AND p.category_id = :category_id';
             $params['category_id'] = $cat['id'];
         }
     }
 
     if ($minPrice !== null) {
-        $sql .= ' AND price >= :min_price';
+        $sql .= ' AND p.price >= :min_price';
         $params['min_price'] = $minPrice;
     }
     if ($maxPrice !== null) {
-        $sql .= ' AND price <= :max_price';
+        $sql .= ' AND p.price <= :max_price';
         $params['max_price'] = $maxPrice;
     }
     if ($minRating !== null) {
-        $sql .= ' AND rating >= :min_rating';
+        $sql .= ' AND p.rating >= :min_rating';
         $params['min_rating'] = $minRating;
     }
     if ($inStock) {
-        $sql .= ' AND (unlimited_stock = 1 OR stock > 0)';
+        $sql .= ' AND (p.unlimited_stock = 1 OR p.stock > 0)';
     }
 
     switch ($sort) {
-        case 'price-asc':  $sql .= ' ORDER BY price ASC'; break;
-        case 'price-desc': $sql .= ' ORDER BY price DESC'; break;
-        case 'rating':     $sql .= ' ORDER BY rating DESC'; break;
-        case 'new':        $sql .= ' ORDER BY created_at DESC'; break;
-        default:           $sql .= ' ORDER BY display_order ASC, created_at DESC';
+        case 'price-asc':  $sql .= ' ORDER BY p.price ASC'; break;
+        case 'price-desc': $sql .= ' ORDER BY p.price DESC'; break;
+        case 'rating':     $sql .= ' ORDER BY p.rating DESC'; break;
+        case 'new':        $sql .= ' ORDER BY p.created_at DESC'; break;
+        default:           $sql .= ' ORDER BY p.display_order ASC, p.created_at DESC';
     }
 
     $sql .= ' LIMIT ' . $limit;
@@ -101,6 +184,65 @@ try {
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
     $products = $stmt->fetchAll();
+
+    // In-memory relevance ranking when searching
+    if ($rawQ !== '' && $sort === 'relevance' && !empty($products)) {
+        $targetNorm = $normQ;
+        $targetWords = $effectiveTokens;
+
+        usort($products, function ($a, $b) use ($normalizeArabic, $targetNorm, $targetWords) {
+            $calcScore = function ($p) use ($normalizeArabic, $targetNorm, $targetWords) {
+                $score = 0;
+                $tAr = $normalizeArabic($p['title_ar'] ?? '');
+                $sSlug = $normalizeArabic(str_replace('-', ' ', $p['slug'] ?? ''));
+                $authAr = $normalizeArabic($p['author_ar'] ?? '');
+
+                // Exact title match
+                if ($tAr === $targetNorm) {
+                    $score += 200;
+                } elseif (str_starts_with($tAr, $targetNorm)) {
+                    $score += 150;
+                } elseif (str_contains($tAr, $targetNorm)) {
+                    $score += 100;
+                }
+
+                // Slug match
+                if (str_contains($sSlug, $targetNorm)) {
+                    $score += 80;
+                }
+
+                // Author match
+                if ($authAr !== '—' && $authAr !== '' && str_contains($authAr, $targetNorm)) {
+                    $score += 120;
+                }
+
+                // Token coverage
+                if (!empty($targetWords)) {
+                    $matchedWords = 0;
+                    foreach ($targetWords as $w) {
+                        if (str_contains($tAr, $w) || str_contains($sSlug, $w)) {
+                            $matchedWords++;
+                            $score += 30;
+                        }
+                    }
+                    if ($matchedWords === count($targetWords)) {
+                        $score += 50;
+                    }
+                }
+
+                return $score;
+            };
+
+            $scoreA = $calcScore($a);
+            $scoreB = $calcScore($b);
+
+            if ($scoreA !== $scoreB) {
+                return $scoreB <=> $scoreA; // Highest score first
+            }
+
+            return ($a['display_order'] ?? 0) <=> ($b['display_order'] ?? 0);
+        });
+    }
 
     Response::ok(['products' => $products, 'total' => count($products)]);
 } catch (\Throwable $e) {

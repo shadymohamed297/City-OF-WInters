@@ -5,7 +5,7 @@ use App\Csrf;
 use App\Database;
 use App\Response;
 
-require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
 $pdo = Database::connection();

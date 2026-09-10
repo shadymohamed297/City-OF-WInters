@@ -3,7 +3,7 @@
 use App\Database;
 use App\Response;
 
-require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 $pdo = Database::connection();
 $baseUrl = getenv('APP_URL') ?: 'https://www.madinatalodabaa.com';

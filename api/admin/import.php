@@ -7,7 +7,7 @@ use App\Response;
 use App\Slugify;
 use App\Validator;
 
-require_once __DIR__ . '/../../../vendor/autoload.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
 
 Csrf::middleware();
 $auth = new App\Auth(Database::connection());
