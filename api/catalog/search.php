@@ -155,15 +155,15 @@ try {
         }
     }
 
-    if ($minPrice !== null) {
+    if ($minPrice !== null && $minPrice > 0) {
         $sql .= ' AND p.price >= :min_price';
         $params['min_price'] = $minPrice;
     }
-    if ($maxPrice !== null) {
+    if ($maxPrice !== null && $maxPrice > 0) {
         $sql .= ' AND p.price <= :max_price';
         $params['max_price'] = $maxPrice;
     }
-    if ($minRating !== null) {
+    if ($minRating !== null && $minRating > 0) {
         $sql .= ' AND p.rating >= :min_rating';
         $params['min_rating'] = $minRating;
     }
