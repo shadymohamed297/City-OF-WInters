@@ -381,7 +381,8 @@ function AdminAuthors() {
             onClick: resetForm
           }),
           e.jsxs("div", {
-            className: "relative bg-background rounded-3xl shadow-2xl w-full max-w-2xl p-6 space-y-5 max-h-[92vh] overflow-y-auto border border-border",
+            className: "relative bg-background rounded-3xl shadow-2xl w-full max-w-2xl p-6 space-y-5 border border-border",
+            style: { maxHeight: "88vh", overflowY: "auto" },
             children: [
               // Modal Title
               e.jsxs("div", {
@@ -575,7 +576,8 @@ function AdminAuthors() {
 
                   // Books list
                   e.jsx("div", {
-                    className: "max-h-52 overflow-y-auto space-y-1.5 pe-1 divide-y divide-border/40",
+                    className: "space-y-1.5 pe-1 divide-y divide-border/40",
+                    style: { maxHeight: "220px", overflowY: "auto" },
                     children: modalBooks.length === 0
                       ? e.jsx("p", {
                           className: "text-xs text-muted-foreground py-3 text-center",
