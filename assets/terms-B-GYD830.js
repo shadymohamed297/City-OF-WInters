@@ -1,1 +1,1 @@
-import{l as t}from"./index-Dmn91ErK-v3.js";import{P as e}from"./PolicyPage-DDAX4q3h.js";const i=()=>t.jsx(e,{arField:"terms_ar",enField:"terms_en",titleAr:"الشروط والأحكام",titleEn:"Terms & Conditions"});export{i as component};
+import{l as t}from"./index-Dmn91ErK.js";import{P as e}from"./PolicyPage-DDAX4q3h.js";const i=()=>t.jsx(e,{arField:"terms_ar",enField:"terms_en",titleAr:"الشروط والأحكام",titleEn:"Terms & Conditions"});export{i as component};

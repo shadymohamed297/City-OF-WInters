@@ -1,1 +1,1 @@
-import{a0 as p}from"./index-Dmn91ErK-v3.js";async function n(){return p.get("/api/shipping/rates.php")}async function o(a,t){return p.post("/api/coupons/validate.php",{code:a,subtotal:t})}export{n as g,o as v};
+import{a0 as p}from"./index-Dmn91ErK.js";async function n(){return p.get("/api/shipping/rates.php")}async function o(a,t){return p.post("/api/coupons/validate.php",{code:a,subtotal:t})}export{n as g,o as v};

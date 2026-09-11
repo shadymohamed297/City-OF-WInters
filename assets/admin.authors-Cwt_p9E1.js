@@ -1,4 +1,4 @@
-import{k as B,o as U,u as Y,x as Z,c as a,l as e,ai as q,aj as V,a6 as ee,ak as se,W as v,O as SearchIcon}from"./index-Dmn91ErK-v3.js";
+import{k as B,o as U,u as Y,x as Z,c as a,l as e,ai as q,aj as V,a6 as ee,ak as se,W as v,O as SearchIcon}from"./index-Dmn91ErK.js";
 import{u as G}from"./useMutation-B6M8l77A.js";
 import{ga as getAuthors,pa as postAuthor,da as delAuthor}from"./admin-Bj8jRXbE.js";
 import{L as O}from"./loader-circle-CH_wIG6b.js";

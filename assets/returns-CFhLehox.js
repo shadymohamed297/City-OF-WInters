@@ -1,1 +1,1 @@
-import{l as e}from"./index-Dmn91ErK-v3.js";import{P as o}from"./PolicyPage-DDAX4q3h.js";const r=()=>e.jsx(o,{arField:"refund_policy_ar",enField:"refund_policy_en",titleAr:"سياسة الاسترجاع والاستبدال",titleEn:"Returns & Refunds"});export{r as component};
+import{l as e}from"./index-Dmn91ErK.js";import{P as o}from"./PolicyPage-DDAX4q3h.js";const r=()=>e.jsx(o,{arField:"refund_policy_ar",enField:"refund_policy_en",titleAr:"سياسة الاسترجاع والاستبدال",titleEn:"Returns & Refunds"});export{r as component};
