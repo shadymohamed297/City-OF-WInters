@@ -7,16 +7,11 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 try {
     $pdo = Database::connection();
-    $stmt = $pdo->query("SELECT id, title_ar, author_ar, author_id FROM products WHERE author_ar != '—' AND author_ar != '' LIMIT 10");
-    $booksWithAuthor = $stmt->fetchAll();
-
-    $aStmt = $pdo->query("SELECT * FROM authors");
-    $allAuthors = $aStmt->fetchAll();
+    $stmt = $pdo->query("SELECT id, slug, title_ar FROM products ORDER BY id LIMIT 15");
+    $sampleBooks = $stmt->fetchAll();
 
     Response::ok([
-        'books_with_author' => $booksWithAuthor,
-        'authors_count' => count($allAuthors),
-        'authors' => $allAuthors
+        'sample_books' => $sampleBooks
     ]);
 } catch (\Throwable $e) {
     Response::serverError($e->getMessage());
