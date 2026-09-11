@@ -53,6 +53,8 @@ if ($method === 'POST') {
         'description_en' => Validator::stringOrNull($input['description_en'] ?? '', 2000),
         'price' => $price,
         'compare_at_price' => Validator::numberOrNull($input['compare_at_price'] ?? null, 0, 1000000),
+        'price_usd' => Validator::numberOrNull($input['price_usd'] ?? null, 0, 100000),
+        'compare_at_price_usd' => Validator::numberOrNull($input['compare_at_price_usd'] ?? null, 0, 100000),
         'cost_price' => Validator::number($input['cost_price'] ?? 0, 0, 1000000),
         'marketing_cost' => Validator::number($input['marketing_cost'] ?? 0, 0, 1000000),
         'misc_expenses' => Validator::number($input['misc_expenses'] ?? 0, 0, 1000000),

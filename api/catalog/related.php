@@ -47,7 +47,7 @@ try {
 
     // 1. Author match if author is set and valid
     if (($authorAr !== '' && $authorAr !== '—') || ($authorEn !== '' && $authorEn !== '—')) {
-        $authSql = 'SELECT id, slug, title_ar, title_en, author_ar, author_en, publisher_ar, publisher_en, price, compare_at_price, cover_url, category_id, pages, isbn, rating, reviews_count, stock, unlimited_stock, is_active, is_bestseller, is_new_arrival, is_featured, display_order, created_at FROM products WHERE is_active = 1 AND id != :curr_id AND (';
+        $authSql = 'SELECT id, slug, title_ar, title_en, author_ar, author_en, publisher_ar, publisher_en, price, compare_at_price, price_usd, compare_at_price_usd, cover_url, category_id, pages, isbn, rating, reviews_count, stock, unlimited_stock, is_active, is_bestseller, is_new_arrival, is_featured, display_order, created_at FROM products WHERE is_active = 1 AND id != :curr_id AND (';
         $authParams = ['curr_id' => $currId];
         $authOrs = [];
 
@@ -75,7 +75,7 @@ try {
         $cleaned = trim(preg_replace('/(\s*["\(«].*|\s*الجزء.*|\s*الأجزاء.*|\s*كتابين.*|\s*ثلاث كتب.*|\s*أربع كتب.*|\s*خمس كتب.*)/u', '', $current['title_ar']));
         if (mb_strlen($cleaned) >= 4 && !in_array($cleaned, ['كتاب', 'رواية', 'مجموعة'], true)) {
             $seriesRoot = $cleaned;
-            $sSql = 'SELECT id, slug, title_ar, title_en, author_ar, author_en, publisher_ar, publisher_en, price, compare_at_price, cover_url, category_id, pages, isbn, rating, reviews_count, stock, unlimited_stock, is_active, is_bestseller, is_new_arrival, is_featured, display_order, created_at FROM products WHERE is_active = 1 AND id != :curr_id AND (title_ar LIKE :s_pref OR slug LIKE :s_slug) LIMIT 12';
+            $sSql = 'SELECT id, slug, title_ar, title_en, author_ar, author_en, publisher_ar, publisher_en, price, compare_at_price, price_usd, compare_at_price_usd, cover_url, category_id, pages, isbn, rating, reviews_count, stock, unlimited_stock, is_active, is_bestseller, is_new_arrival, is_featured, display_order, created_at FROM products WHERE is_active = 1 AND id != :curr_id AND (title_ar LIKE :s_pref OR slug LIKE :s_slug) LIMIT 12';
             $sStmt = $pdo->prepare($sSql);
             $sStmt->execute([
                 'curr_id' => $currId,
@@ -94,7 +94,7 @@ try {
     // 3. Related products (same category)
     $relatedProducts = [];
     if ($catId) {
-        $relSql = 'SELECT id, slug, title_ar, title_en, author_ar, author_en, publisher_ar, publisher_en, price, compare_at_price, cover_url, category_id, pages, isbn, rating, reviews_count, stock, unlimited_stock, is_active, is_bestseller, is_new_arrival, is_featured, display_order, created_at FROM products WHERE is_active = 1 AND id != :curr_id AND category_id = :cat_id';
+        $relSql = 'SELECT id, slug, title_ar, title_en, author_ar, author_en, publisher_ar, publisher_en, price, compare_at_price, price_usd, compare_at_price_usd, cover_url, category_id, pages, isbn, rating, reviews_count, stock, unlimited_stock, is_active, is_bestseller, is_new_arrival, is_featured, display_order, created_at FROM products WHERE is_active = 1 AND id != :curr_id AND category_id = :cat_id';
         $relParams = ['curr_id' => $currId, 'cat_id' => $catId];
 
         if (!empty($seenIds)) {
@@ -116,7 +116,7 @@ try {
 
     // Fallback if not enough products
     if (count($relatedProducts) + count($authorProducts) < 4) {
-        $fallSql = 'SELECT id, slug, title_ar, title_en, author_ar, author_en, publisher_ar, publisher_en, price, compare_at_price, cover_url, category_id, pages, isbn, rating, reviews_count, stock, unlimited_stock, is_active, is_bestseller, is_new_arrival, is_featured, display_order, created_at FROM products WHERE is_active = 1 AND id != :curr_id';
+        $fallSql = 'SELECT id, slug, title_ar, title_en, author_ar, author_en, publisher_ar, publisher_en, price, compare_at_price, price_usd, compare_at_price_usd, cover_url, category_id, pages, isbn, rating, reviews_count, stock, unlimited_stock, is_active, is_bestseller, is_new_arrival, is_featured, display_order, created_at FROM products WHERE is_active = 1 AND id != :curr_id';
         $fallParams = ['curr_id' => $currId];
         if (!empty($seenIds)) {
             $excludeIdx = 0;

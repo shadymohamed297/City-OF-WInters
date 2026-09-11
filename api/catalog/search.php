@@ -18,7 +18,7 @@ try {
     $limit = isset($_GET['limit']) ? (int) $_GET['limit'] : 60;
     $limit = max(1, min(100, $limit));
 
-    $sql = 'SELECT p.id, p.slug, p.title_ar, p.title_en, p.author_ar, p.author_en, p.publisher_ar, p.publisher_en, p.description_ar, p.description_en, p.price, p.compare_at_price, p.cover_url, p.category_id, p.pages, p.isbn, p.rating, p.reviews_count, p.stock, p.unlimited_stock, p.is_active, p.is_bestseller, p.is_new_arrival, p.is_featured, p.display_order, p.created_at FROM products p WHERE p.is_active = 1';
+    $sql = 'SELECT p.id, p.slug, p.title_ar, p.title_en, p.author_ar, p.author_en, p.publisher_ar, p.publisher_en, p.description_ar, p.description_en, p.price, p.compare_at_price, p.price_usd, p.compare_at_price_usd, p.cover_url, p.category_id, p.pages, p.isbn, p.rating, p.reviews_count, p.stock, p.unlimited_stock, p.is_active, p.is_bestseller, p.is_new_arrival, p.is_featured, p.display_order, p.created_at FROM products p WHERE p.is_active = 1';
     $params = [];
 
     // Helper: Normalize Arabic string in PHP

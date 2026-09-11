@@ -64,7 +64,7 @@ try {
     // Fetch author's active products
     $pStmt = $pdo->prepare('
         SELECT id, slug, title_ar, title_en, author_ar, author_en, publisher_ar, publisher_en,
-               description_ar, description_en, price, compare_at_price, cover_url,
+               description_ar, description_en, price, compare_at_price, price_usd, compare_at_price_usd, cover_url,
                pages, isbn, rating, reviews_count, stock, unlimited_stock, is_bestseller, is_new_arrival, is_featured
         FROM products
         WHERE (author_id = :aid OR (author_ar = :aname AND (author_id IS NULL OR author_id = "")))

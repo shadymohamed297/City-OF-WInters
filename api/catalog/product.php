@@ -22,7 +22,7 @@ try {
         Response::ok(['product' => null]);
     }
 
-    $selectCols = 'id, slug, title_ar, title_en, author_id, author_ar, author_en, publisher_ar, publisher_en, description_ar, description_en, price, compare_at_price, cover_url, category_id, pages, isbn, rating, reviews_count, stock, unlimited_stock, is_active, is_bestseller, is_new_arrival, is_featured, display_order, created_at';
+    $selectCols = 'id, slug, title_ar, title_en, author_id, author_ar, author_en, publisher_ar, publisher_en, description_ar, description_en, price, compare_at_price, price_usd, compare_at_price_usd, cover_url, category_id, pages, isbn, rating, reviews_count, stock, unlimited_stock, is_active, is_bestseller, is_new_arrival, is_featured, display_order, created_at';
 
     // Normalizer helper
     $normalize = function (string $text): string {
