@@ -7,7 +7,8 @@ class Csrf
     private static function initSession(): void
     {
         if (session_status() === PHP_SESSION_NONE) {
-            session_name('auth_session');
+            $sessionName = getenv('SESSION_NAME') ?: 'cw_session';
+            session_name($sessionName);
             $lifetime = (int) (getenv('SESSION_LIFETIME') ?: 7200);
             $secure = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
             session_set_cookie_params([
