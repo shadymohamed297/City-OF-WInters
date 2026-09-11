@@ -244,7 +244,89 @@ try {
         });
     }
 
-    Response::ok(['products' => $products, 'total' => count($products)]);
+    // Find matching authors
+    $authors = [];
+    if ($rawQ !== '') {
+        $authorIds = [];
+
+        // 1. Direct author search by name, slug, bio
+        $aSql = "
+            SELECT a.id, a.slug, a.name_ar, a.name_en, a.photo_url, a.bio_ar, a.bio_en,
+              (SELECT COUNT(*) FROM products p WHERE (p.author_id = a.id OR (p.author_ar = a.name_ar AND (p.author_id IS NULL OR p.author_id = ''))) AND p.is_active = 1) AS books_count
+            FROM authors a
+            WHERE a.is_active = 1
+              AND (
+                {$sqlNorm('a.name_ar')} LIKE :a_norm
+                OR a.name_ar LIKE :a_raw
+                OR {$sqlNorm('a.name_en')} LIKE :a_norm
+                OR a.slug LIKE :a_raw
+                OR {$sqlNorm("COALESCE(a.bio_ar, '')")} LIKE :a_norm
+              )
+            LIMIT 5
+        ";
+        $aStmt = $pdo->prepare($aSql);
+        $aStmt->execute([
+            'a_norm' => '%' . $normQ . '%',
+            'a_raw'  => '%' . $rawQ . '%',
+        ]);
+        $directAuthors = $aStmt->fetchAll();
+        foreach ($directAuthors as $da) {
+            $authors[] = $da;
+            $authorIds[] = $da['id'];
+        }
+
+        // 2. If user searched by book title, also include author of the top matching books
+        if (!empty($products)) {
+            $candidateAuthorNames = [];
+            $candidateAuthorIds = [];
+            foreach (array_slice($products, 0, 5) as $topProduct) {
+                if (!empty($topProduct['author_id']) && !in_array($topProduct['author_id'], $authorIds, true)) {
+                    $candidateAuthorIds[] = $topProduct['author_id'];
+                }
+                if (!empty($topProduct['author_ar']) && $topProduct['author_ar'] !== '—') {
+                    $candidateAuthorNames[] = $topProduct['author_ar'];
+                }
+            }
+            $candidateAuthorIds = array_unique($candidateAuthorIds);
+            $candidateAuthorNames = array_unique($candidateAuthorNames);
+
+            if (!empty($candidateAuthorIds) || !empty($candidateAuthorNames)) {
+                $conds = [];
+                $cParams = [];
+                $ci = 0;
+                foreach ($candidateAuthorIds as $aid) {
+                    $conds[] = "a.id = :ca_id_{$ci}";
+                    $cParams["ca_id_{$ci}"] = $aid;
+                    $ci++;
+                }
+                foreach ($candidateAuthorNames as $aname) {
+                    $conds[] = "a.name_ar = :ca_name_{$ci}";
+                    $cParams["ca_name_{$ci}"] = $aname;
+                    $ci++;
+                }
+                if (!empty($conds)) {
+                    $bookAuthorsSql = "
+                        SELECT a.id, a.slug, a.name_ar, a.name_en, a.photo_url, a.bio_ar, a.bio_en,
+                          (SELECT COUNT(*) FROM products p WHERE (p.author_id = a.id OR (p.author_ar = a.name_ar AND (p.author_id IS NULL OR p.author_id = ''))) AND p.is_active = 1) AS books_count
+                        FROM authors a
+                        WHERE a.is_active = 1 AND (" . implode(' OR ', $conds) . ")
+                        LIMIT 5
+                    ";
+                    $baStmt = $pdo->prepare($bookAuthorsSql);
+                    $baStmt->execute($cParams);
+                    $bookAuthors = $baStmt->fetchAll();
+                    foreach ($bookAuthors as $ba) {
+                        if (!in_array($ba['id'], $authorIds, true)) {
+                            $authors[] = $ba;
+                            $authorIds[] = $ba['id'];
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    Response::ok(['products' => $products, 'total' => count($products), 'authors' => $authors]);
 } catch (\Throwable $e) {
     Response::serverError($e->getMessage());
 }

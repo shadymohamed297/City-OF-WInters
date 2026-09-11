@@ -22,7 +22,7 @@ try {
         Response::ok(['product' => null]);
     }
 
-    $selectCols = 'id, slug, title_ar, title_en, author_ar, author_en, publisher_ar, publisher_en, description_ar, description_en, price, compare_at_price, cover_url, category_id, pages, isbn, rating, reviews_count, stock, unlimited_stock, is_active, is_bestseller, is_new_arrival, is_featured, display_order, created_at';
+    $selectCols = 'id, slug, title_ar, title_en, author_id, author_ar, author_en, publisher_ar, publisher_en, description_ar, description_en, price, compare_at_price, cover_url, category_id, pages, isbn, rating, reviews_count, stock, unlimited_stock, is_active, is_bestseller, is_new_arrival, is_featured, display_order, created_at';
 
     // Normalizer helper
     $normalize = function (string $text): string {
@@ -105,6 +105,26 @@ try {
                 // Ignore uniqueness collision
             }
         }
+    }
+
+    if ($product) {
+        $author = null;
+        if (!empty($product['author_id'])) {
+            try {
+                $stmtA = $pdo->prepare('SELECT id, slug, name_ar, name_en, photo_url, bio_ar, bio_en FROM authors WHERE id = :id AND is_active = 1 LIMIT 1');
+                $stmtA->execute(['id' => $product['author_id']]);
+                $author = $stmtA->fetch() ?: null;
+            } catch (\Throwable $e) {}
+        }
+        if (!$author && !empty($product['author_ar']) && $product['author_ar'] !== '—') {
+            try {
+                $stmtA = $pdo->prepare('SELECT id, slug, name_ar, name_en, photo_url, bio_ar, bio_en FROM authors WHERE (name_ar = :name OR name_en = :name) AND is_active = 1 LIMIT 1');
+                $stmtA->execute(['name' => $product['author_ar']]);
+                $author = $stmtA->fetch() ?: null;
+            } catch (\Throwable $e) {}
+        }
+        $product['author'] = $author;
+        $product['author_slug'] = $author ? $author['slug'] : null;
     }
 
     Response::ok(['product' => $product ?: null]);

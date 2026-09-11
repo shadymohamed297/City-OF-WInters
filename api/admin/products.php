@@ -58,6 +58,7 @@ if ($method === 'POST') {
         'misc_expenses' => Validator::number($input['misc_expenses'] ?? 0, 0, 1000000),
         'cover_url' => Validator::stringOrNull($input['cover_url'] ?? '', 5000),
         'category_id' => filter_var($input['category_id'] ?? null, FILTER_VALIDATE_UUID) ?: null,
+        'author_id' => filter_var($input['author_id'] ?? null, FILTER_VALIDATE_UUID) ?: null,
         'pages' => Validator::intOrNull($input['pages'] ?? null, 0, 20000),
         'isbn' => Validator::stringOrNull($input['isbn'] ?? '', 40),
         'stock' => $stock,
@@ -68,6 +69,16 @@ if ($method === 'POST') {
         'is_featured' => Validator::bool($input['is_featured'] ?? false),
         'display_order' => Validator::int($input['display_order'] ?? 0, -99999, 99999),
     ];
+
+    // If author_id not set but author_ar is known, auto-match author
+    if (empty($data['author_id']) && $authorAr !== '' && $authorAr !== '—') {
+        $aLookup = $pdo->prepare('SELECT id FROM authors WHERE name_ar = :name OR name_en = :name LIMIT 1');
+        $aLookup->execute(['name' => $authorAr]);
+        $aRow = $aLookup->fetch();
+        if ($aRow) {
+            $data['author_id'] = $aRow['id'];
+        }
+    }
 
     if (isset($input['id'])) {
         $id = Validator::uuid($input['id']);
@@ -98,8 +109,9 @@ if ($method === 'POST') {
         $workIds = array_values(array_filter(array_unique($input['author_work_ids']), fn($id) => preg_match('/^[0-9a-f-]{36}$/i', $id) && $id !== $productId));
         if (!empty($workIds)) {
             $inPlaceholders = implode(',', array_fill(0, count($workIds), '?'));
-            $updStmt = $pdo->prepare("UPDATE products SET author_ar = ?, author_en = ? WHERE id IN ($inPlaceholders)");
-            $updParams = array_merge([$authorAr, $authorEn ?: $authorAr], $workIds);
+            $authorIdVal = $data['author_id'] ?? null;
+            $updStmt = $pdo->prepare("UPDATE products SET author_ar = ?, author_en = ?, author_id = ? WHERE id IN ($inPlaceholders)");
+            $updParams = array_merge([$authorAr, $authorEn ?: $authorAr, $authorIdVal], $workIds);
             $updStmt->execute($updParams);
         }
     }
@@ -109,7 +121,7 @@ if ($method === 'POST') {
         $unlinkIds = array_values(array_filter(array_unique($input['unlinked_work_ids']), fn($id) => preg_match('/^[0-9a-f-]{36}$/i', $id) && $id !== $productId));
         if (!empty($unlinkIds)) {
             $inPlaceholders = implode(',', array_fill(0, count($unlinkIds), '?'));
-            $unlinkStmt = $pdo->prepare("UPDATE products SET author_ar = '—', author_en = '—' WHERE id IN ($inPlaceholders) AND author_ar = ?");
+            $unlinkStmt = $pdo->prepare("UPDATE products SET author_ar = '—', author_en = '—', author_id = NULL WHERE id IN ($inPlaceholders) AND author_ar = ?");
             $unlinkParams = array_merge($unlinkIds, [$authorAr]);
             $unlinkStmt->execute($unlinkParams);
         }
