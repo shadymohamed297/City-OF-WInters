@@ -14,8 +14,8 @@ try {
     $normalize = function (string $text): string {
         $clean = preg_replace('/[\x{2000}-\x{206F}\x{FEFF}\x{FFFD}]/u', '', $text);
         $clean = preg_replace('/[_\-"\'«»()\[\]]/u', ' ', $clean);
-        $clean = preg_replace('/\s+/u', '-, trim($clean));
-        return trim($clean, '-);
+        $clean = preg_replace('/\s+/u', '-', trim($clean));
+        return trim($clean, '-');
     };
 
     $updated = [];
@@ -27,7 +27,7 @@ try {
             if (str_contains($clean, "\ufffd") || trim($clean) === '') {
                 $clean = $normalize($p['title_ar']);
             }
-            $clean = trim($clean, '-);
+            $clean = trim($clean, '-');
             if ($clean !== '' && $clean !== $slug) {
                 $upd = $pdo->prepare("UPDATE products SET slug = :slug WHERE id = :id");
                 $upd->execute(['slug' => $clean, 'id' => $p['id']]);
