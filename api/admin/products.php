@@ -93,6 +93,28 @@ if ($method === 'POST') {
         }
     }
 
+    // Sync author's other works if provided
+    if (isset($input['author_work_ids']) && is_array($input['author_work_ids']) && $authorAr !== '' && $authorAr !== '—') {
+        $workIds = array_values(array_filter(array_unique($input['author_work_ids']), fn($id) => preg_match('/^[0-9a-f-]{36}$/i', $id) && $id !== $productId));
+        if (!empty($workIds)) {
+            $inPlaceholders = implode(',', array_fill(0, count($workIds), '?'));
+            $updStmt = $pdo->prepare("UPDATE products SET author_ar = ?, author_en = ? WHERE id IN ($inPlaceholders)");
+            $updParams = array_merge([$authorAr, $authorEn ?: $authorAr], $workIds);
+            $updStmt->execute($updParams);
+        }
+    }
+
+    // Handle explicitly unlinked works
+    if (isset($input['unlinked_work_ids']) && is_array($input['unlinked_work_ids']) && $authorAr !== '' && $authorAr !== '—') {
+        $unlinkIds = array_values(array_filter(array_unique($input['unlinked_work_ids']), fn($id) => preg_match('/^[0-9a-f-]{36}$/i', $id) && $id !== $productId));
+        if (!empty($unlinkIds)) {
+            $inPlaceholders = implode(',', array_fill(0, count($unlinkIds), '?'));
+            $unlinkStmt = $pdo->prepare("UPDATE products SET author_ar = '—', author_en = '—' WHERE id IN ($inPlaceholders) AND author_ar = ?");
+            $unlinkParams = array_merge($unlinkIds, [$authorAr]);
+            $unlinkStmt->execute($unlinkParams);
+        }
+    }
+
     Response::ok(['product_id' => $productId]);
     exit;
 }
