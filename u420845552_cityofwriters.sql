@@ -442,7 +442,7 @@ CREATE TABLE `site_settings` (
   `logo_url` text DEFAULT NULL,
   `favicon_url` text DEFAULT NULL,
   `site_name_ar` varchar(120) NOT NULL DEFAULT 'مدينة الأدباء',
-  `site_name_en` varchar(120) NOT NULL DEFAULT 'Al-Motasawelin',
+  `site_name_en` varchar(120) NOT NULL DEFAULT 'Madinat Al-Odabaa',
   `tagline_ar` varchar(200) NOT NULL DEFAULT 'مكتبتك العربية المفضلة',
   `tagline_en` varchar(200) NOT NULL DEFAULT 'Your favorite Arabic bookstore',
   `meta_description_ar` text DEFAULT NULL,
@@ -484,7 +484,7 @@ CREATE TABLE `site_settings` (
 --
 
 INSERT INTO `site_settings` (`id`, `logo_url`, `favicon_url`, `site_name_ar`, `site_name_en`, `tagline_ar`, `tagline_en`, `meta_description_ar`, `meta_description_en`, `hero_images`, `hero_title_ar`, `hero_title_en`, `hero_subtitle_ar`, `hero_subtitle_en`, `social_facebook`, `social_instagram`, `social_twitter`, `social_tiktok`, `social_youtube`, `social_whatsapp`, `contact_phone`, `contact_email`, `contact_address_ar`, `contact_address_en`, `footer_about_ar`, `footer_about_en`, `privacy_policy_ar`, `privacy_policy_en`, `terms_ar`, `terms_en`, `refund_policy_ar`, `refund_policy_en`, `shipping_policy_ar`, `shipping_policy_en`, `about_ar`, `about_en`, `custom_strings`, `created_at`, `updated_at`) VALUES
-(1, 'https://supabase-cityofwriters.creativessquare.store/storage/v1/object/public/site-assets/branding/1785428252301_485159259_1045618527593483_630436883469979457_n.jpg', 'https://supabase-cityofwriters.creativessquare.store/storage/v1/object/public/site-assets/branding/1785428308080_485159259_1045618527593483_630436883469979457_n_copy.png', 'مدينة الأدباء', 'Al-Motasawelin', 'مكتبتك العربية المفضلة', 'Your favorite Arabic bookstore', NULL, NULL, '[]', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '[]', '2026-07-30 13:34:53', '2026-07-30 16:18:31');
+(1, 'https://supabase-cityofwriters.creativessquare.store/storage/v1/object/public/site-assets/branding/1785428252301_485159259_1045618527593483_630436883469979457_n.jpg', 'https://supabase-cityofwriters.creativessquare.store/storage/v1/object/public/site-assets/branding/1785428308080_485159259_1045618527593483_630436883469979457_n_copy.png', 'مدينة الأدباء', 'Madinat Al-Odabaa', 'مكتبتك العربية المفضلة', 'Your favorite Arabic bookstore', NULL, NULL, '[]', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '[]', '2026-07-30 13:34:53', '2026-07-30 16:18:31');
 
 -- --------------------------------------------------------
 
