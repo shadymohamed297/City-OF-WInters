@@ -14,9 +14,9 @@ try {
     $bestseller = isset($_GET['bestseller']);
     $newArrival = isset($_GET['new_arrival']);
 
-    // Default to 16 products for all catalog queries unless explicitly requested otherwise
-    $limit = isset($_GET['limit']) ? (int) $_GET['limit'] : 16;
-    $limit = max(1, min(100, $limit));
+    // If limit is specified (e.g. homepage sections asking for limit=16), respect it.
+    // Otherwise, return all active products (e.g. for /shop catalog).
+    $limit = isset($_GET['limit']) ? max(1, min(1000, (int) $_GET['limit'])) : null;
 
     $sql = 'SELECT id, slug, title_ar, title_en, author_ar, author_en, publisher_ar, publisher_en, description_ar, description_en, price, compare_at_price, cover_url, category_id, pages, isbn, rating, reviews_count, stock, unlimited_stock, is_active, is_bestseller, is_new_arrival, is_featured, display_order, created_at FROM products WHERE is_active = 1';
     $params = [];
@@ -39,7 +39,10 @@ try {
         $params['category_id'] = $categoryId;
     }
 
-    $sql .= ' ORDER BY display_order ASC, created_at DESC LIMIT ' . $limit;
+    $sql .= ' ORDER BY display_order ASC, created_at DESC';
+    if ($limit !== null) {
+        $sql .= ' LIMIT ' . $limit;
+    }
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
     $products = $stmt->fetchAll();
