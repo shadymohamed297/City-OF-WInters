@@ -24,6 +24,16 @@ try {
         $current = $stmt->fetch();
     }
 
+    if (!$current) {
+        $referer = $_SERVER['HTTP_REFERER'] ?? '';
+        if (preg_match('~/product/([^/?#]+)~', $referer, $m)) {
+            $refSlug = urldecode($m[1]);
+            $stmt = $pdo->prepare('SELECT id, slug, title_ar, title_en, author_ar, author_en, category_id FROM products WHERE (slug = :slug OR id = :id) LIMIT 1');
+            $stmt->execute(['slug' => $refSlug, 'id' => $refSlug]);
+            $current = $stmt->fetch();
+        }
+    }
+
     $currId = $current['id'] ?? ($productId ?: '00000000-0000-0000-0000-000000000000');
     $authorAr = trim($current['author_ar'] ?? '');
     $authorEn = trim($current['author_en'] ?? '');
