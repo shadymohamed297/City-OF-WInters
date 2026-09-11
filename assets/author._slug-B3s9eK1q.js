@@ -73,9 +73,13 @@ function AuthorShareBar({ url, title, isAr }) {
 }
 
 function AuthorProfilePage() {
-  const params = W.useParams();
-  const rawSlug = params?.slug;
-  const slug = typeof rawSlug === "string" ? rawSlug : (rawSlug?.data?.slug || rawSlug?.slug || (typeof rawSlug?.data === "string" ? rawSlug.data : "") || "");
+  let slug = "";
+  try {
+    const parts = (window.location.pathname || "").split("/author/");
+    if (parts[1]) {
+      slug = decodeURIComponent(parts[1].split("/")[0].split("?")[0]);
+    }
+  } catch (e) {}
   const locale = T(s => s.locale);
   const isAr = locale === "ar";
 
