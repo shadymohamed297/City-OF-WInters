@@ -13,13 +13,8 @@ try {
 
     if ($slug === '' || $slug === '[object Object]') {
         $referer = $_SERVER['HTTP_REFERER'] ?? '';
-        $matched = preg_match('#/product/([^/?#]+)#', $referer, $m);
-        if ($matched) {
+        if (preg_match('~/product/([^/?#]+)~', $referer, $m)) {
             $slug = urldecode($m[1]);
-        }
-        // Temporary debug
-        if (isset($_GET['debug'])) {
-            Response::ok(['debug_referer' => $referer, 'matched' => $matched, 'm' => $m ?? null, 'resolved_slug' => $slug]);
         }
     }
 
