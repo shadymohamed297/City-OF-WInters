@@ -11,6 +11,9 @@
   # since sitemap.xml is not a real file on disk)
   RewriteRule ^sitemap\.xml$ /api/sitemap.php [L]
 
+  # Versioned assets rewrite (bypasses stale CDN edge cache)
+  RewriteRule ^v-[0-9]+/assets/(.*)$ assets/$1 [L]
+
   # Allow direct access to real files and directories (assets, hero, etc.)
   RewriteCond %{REQUEST_FILENAME} -f [OR]
   RewriteCond %{REQUEST_FILENAME} -d
