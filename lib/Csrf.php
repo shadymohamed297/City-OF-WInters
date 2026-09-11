@@ -4,8 +4,27 @@ namespace App;
 
 class Csrf
 {
+    private static function initSession(): void
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_name('auth_session');
+            $lifetime = (int) (getenv('SESSION_LIFETIME') ?: 7200);
+            $secure = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
+            session_set_cookie_params([
+                'lifetime' => $lifetime,
+                'path' => '/',
+                'domain' => getenv('COOKIE_DOMAIN') ?: '',
+                'secure' => $secure,
+                'httponly' => true,
+                'samesite' => 'Lax',
+            ]);
+            session_start();
+        }
+    }
+
     public static function token(): string
     {
+        self::initSession();
         if (empty($_SESSION['csrf_token']) || !isset($_SESSION['csrf_token'])) {
             $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
         }
@@ -14,6 +33,7 @@ class Csrf
 
     public static function validate(?string $token): bool
     {
+        self::initSession();
         if (!$token || empty($_SESSION['csrf_token'])) {
             return false;
         }
@@ -28,14 +48,16 @@ class Csrf
             return;
         }
 
-        $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
-        $token = null;
+        self::initSession();
 
-        if (stripos($contentType, 'application/json') !== false) {
+        $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+        $token = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? null;
+
+        if (!$token && stripos($contentType, 'application/json') !== false) {
             $input = json_decode(file_get_contents('php://input'), true);
             $token = $input['csrf_token'] ?? null;
-        } else {
-            $token = $_POST['csrf_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? null;
+        } elseif (!$token) {
+            $token = $_POST['csrf_token'] ?? null;
         }
 
         if (!self::validate($token)) {
