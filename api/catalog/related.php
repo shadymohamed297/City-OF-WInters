@@ -126,6 +126,26 @@ try {
         }
     }
 
+    $cleanSlugFn = function (&$list) {
+        foreach ($list as &$p) {
+            if (preg_match('/[\x{2000}-\x{206F}\x{FEFF}\x{FFFD}]/u', $p['slug'])) {
+                $c = preg_replace('/[\x{2000}-\x{206F}\x{FEFF}\x{FFFD}]/u', '', $p['slug']);
+                if (str_contains($c, "\ufffd") || trim($c) === '') {
+                    $c = preg_replace('/[_\-"\'«»()\[\]]/u', ' ', $p['title_ar']);
+                    $c = preg_replace('/\s+/u', '-', trim($c));
+                }
+                $c = trim($c, '-');
+                if ($c !== '') {
+                    $p['slug'] = $c;
+                }
+            }
+        }
+        unset($p);
+    };
+
+    $cleanSlugFn($authorProducts);
+    $cleanSlugFn($relatedProducts);
+
     $allCombined = array_merge($authorProducts, $relatedProducts);
 
     Response::ok([

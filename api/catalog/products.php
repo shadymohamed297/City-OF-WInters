@@ -47,6 +47,21 @@ try {
     $stmt->execute($params);
     $products = $stmt->fetchAll();
 
+    foreach ($products as &$p) {
+        if (preg_match('/[\x{2000}-\x{206F}\x{FEFF}\x{FFFD}]/u', $p['slug'])) {
+            $c = preg_replace('/[\x{2000}-\x{206F}\x{FEFF}\x{FFFD}]/u', '', $p['slug']);
+            if (str_contains($c, "\ufffd") || trim($c) === '') {
+                $c = preg_replace('/[_\-"\'«»()\[\]]/u', ' ', $p['title_ar']);
+                $c = preg_replace('/\s+/u', '-', trim($c));
+            }
+            $c = trim($c, '-');
+            if ($c !== '') {
+                $p['slug'] = $c;
+            }
+        }
+    }
+    unset($p);
+
     Response::ok(['products' => $products]);
 } catch (\Throwable $e) {
     Response::serverError($e->getMessage());
