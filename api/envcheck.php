@@ -7,4 +7,6 @@ echo json_encode([
     'db_host_loaded' => getenv('DB_HOST') ?: '(empty - .env not loading)',
     'db_name_loaded' => getenv('DB_NAME') ?: '(empty - .env not loading)',
     'db_user_loaded' => getenv('DB_USER') ?: '(empty - .env not loading)',
+    'http_referer' => $_SERVER['HTTP_REFERER'] ?? null,
+    'request_uri' => $_SERVER['REQUEST_URI'] ?? null,
 ]);
