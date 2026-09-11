@@ -1,4 +1,4 @@
-import{k as B,o as T,c as p,l as e,au as W,L as $,x as P,a0 as S,W as b,ar as D,as as Q,at as E,ak as K}from"./index-Dmn91ErK.js";
+import{k as B,o as T,c as p,l as e,au as W,L as $,x as P,a0 as S,W as b,ar as D,as as Q,at as E,ak as K}from"./index-Dmn91ErK-v3.js";
 import{P as ProductCard}from"./ProductCard-Cqya0jKe.js";
 import{P as ProductSkeletons}from"./skeletons-Bg0_N_m0.js";
 
