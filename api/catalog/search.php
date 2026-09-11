@@ -256,18 +256,21 @@ try {
             FROM authors a
             WHERE a.is_active = 1
               AND (
-                {$sqlNorm('a.name_ar')} LIKE :a_norm
-                OR a.name_ar LIKE :a_raw
-                OR {$sqlNorm('a.name_en')} LIKE :a_norm
-                OR a.slug LIKE :a_raw
-                OR {$sqlNorm("COALESCE(a.bio_ar, '')")} LIKE :a_norm
+                {$sqlNorm('a.name_ar')} LIKE :a_norm1
+                OR a.name_ar LIKE :a_raw1
+                OR {$sqlNorm('a.name_en')} LIKE :a_norm2
+                OR a.slug LIKE :a_raw2
+                OR {$sqlNorm("COALESCE(a.bio_ar, '')")} LIKE :a_norm3
               )
             LIMIT 5
         ";
         $aStmt = $pdo->prepare($aSql);
         $aStmt->execute([
-            'a_norm' => '%' . $normQ . '%',
-            'a_raw'  => '%' . $rawQ . '%',
+            'a_norm1' => '%' . $normQ . '%',
+            'a_raw1'  => '%' . $rawQ . '%',
+            'a_norm2' => '%' . $normQ . '%',
+            'a_raw2'  => '%' . $rawQ . '%',
+            'a_norm3' => '%' . $normQ . '%',
         ]);
         $directAuthors = $aStmt->fetchAll();
         foreach ($directAuthors as $da) {
