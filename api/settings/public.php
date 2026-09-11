@@ -1,9 +1,23 @@
 <?php
 
+use App\Csrf;
 use App\Database;
 use App\Response;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
+
+// Ensure visitors have a CSRF token initialized
+if (empty($_COOKIE['csrf_token'])) {
+    $token = Csrf::token();
+    $secure = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
+    setcookie('csrf_token', $token, [
+        'expires' => time() + 86400 * 30,
+        'path' => '/',
+        'secure' => $secure,
+        'httponly' => false,
+        'samesite' => 'Lax',
+    ]);
+}
 
 $pdo = Database::connection();
 $stmt = $pdo->prepare('SELECT * FROM site_settings WHERE id = 1 LIMIT 1');

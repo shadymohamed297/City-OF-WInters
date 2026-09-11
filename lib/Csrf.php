@@ -35,10 +35,21 @@ class Csrf
     public static function validate(?string $token): bool
     {
         self::initSession();
-        if (!$token || empty($_SESSION['csrf_token'])) {
+        if (!$token) {
             return false;
         }
-        return hash_equals($_SESSION['csrf_token'], $token);
+
+        if (!empty($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token)) {
+            return true;
+        }
+
+        $cookieToken = $_COOKIE['csrf_token'] ?? null;
+        if ($cookieToken && hash_equals($cookieToken, $token)) {
+            $_SESSION['csrf_token'] = $cookieToken;
+            return true;
+        }
+
+        return false;
     }
 
     public static function middleware(): void

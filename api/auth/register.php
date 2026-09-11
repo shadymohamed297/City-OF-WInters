@@ -7,7 +7,6 @@ use App\Response;
 use App\Validator;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
-Csrf::middleware();
 
 $input = json_decode(file_get_contents('php://input'), true) ?: $_POST;
 
@@ -20,6 +19,16 @@ $auth = new Auth(Database::connection());
 $user = $auth->register($email, $password, [
     'full_name' => $fullName,
     'phone' => $phone,
+]);
+
+$token = Csrf::token();
+$secure = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
+setcookie('csrf_token', $token, [
+    'expires' => time() + 86400 * 30,
+    'path' => '/',
+    'secure' => $secure,
+    'httponly' => false,
+    'samesite' => 'Lax',
 ]);
 
 Response::ok($user);
