@@ -12,6 +12,13 @@ try {
     $slug = trim($rawSlug);
 
     if ($slug === '' || $slug === '[object Object]') {
+        $referer = $_SERVER['HTTP_REFERER'] ?? '';
+        if (preg_match('#/product/([^/?#]+)#u', $referer, $m)) {
+            $slug = urldecode($m[1]);
+        }
+    }
+
+    if ($slug === '' || $slug === '[object Object]') {
         Response::ok(['product' => null]);
     }
 
