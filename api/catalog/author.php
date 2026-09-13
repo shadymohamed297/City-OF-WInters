@@ -51,8 +51,8 @@ try {
 
     // 4. Match by name
     if (!$author) {
-        $stmt = $pdo->prepare('SELECT * FROM authors WHERE is_active = 1 AND (name_ar = :name OR name_en = :name OR slug LIKE :like_slug) LIMIT 1');
-        $stmt->execute(['name' => $slug, 'like_slug' => '%' . $slug . '%']);
+        $stmt = $pdo->prepare('SELECT * FROM authors WHERE is_active = 1 AND (name_ar = :name_ar OR name_en = :name_en OR slug LIKE :like_slug) LIMIT 1');
+        $stmt->execute(['name_ar' => $slug, 'name_en' => $slug, 'like_slug' => '%' . $slug . '%']);
         $author = $stmt->fetch();
     }
 
