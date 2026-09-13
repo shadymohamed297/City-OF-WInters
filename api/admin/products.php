@@ -74,8 +74,8 @@ if ($method === 'POST') {
 
     // If author_id not set but author_ar is known, auto-match author
     if (empty($data['author_id']) && $authorAr !== '' && $authorAr !== '—') {
-        $aLookup = $pdo->prepare('SELECT id FROM authors WHERE name_ar = :name OR name_en = :name LIMIT 1');
-        $aLookup->execute(['name' => $authorAr]);
+        $aLookup = $pdo->prepare('SELECT id FROM authors WHERE name_ar = :name_ar OR name_en = :name_en LIMIT 1');
+        $aLookup->execute(['name_ar' => $authorAr, 'name_en' => $authorAr]);
         $aRow = $aLookup->fetch();
         if ($aRow) {
             $data['author_id'] = $aRow['id'];

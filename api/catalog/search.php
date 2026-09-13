@@ -175,8 +175,8 @@ try {
         case 'price-asc':  $sql .= ' ORDER BY p.price ASC'; break;
         case 'price-desc': $sql .= ' ORDER BY p.price DESC'; break;
         case 'rating':     $sql .= ' ORDER BY p.rating DESC'; break;
-        case 'new':        $sql .= ' ORDER BY p.created_at DESC'; break;
-        default:           $sql .= ' ORDER BY p.display_order ASC, p.created_at DESC';
+        case 'new':        $sql .= ' ORDER BY (CASE WHEN p.cover_url IS NOT NULL AND p.cover_url != "" THEN 0 ELSE 1 END) ASC, p.created_at DESC'; break;
+        default:           $sql .= ' ORDER BY (CASE WHEN p.cover_url IS NOT NULL AND p.cover_url != "" THEN 0 ELSE 1 END) ASC, p.display_order ASC, p.created_at DESC';
     }
 
     $sql .= ' LIMIT ' . $limit;

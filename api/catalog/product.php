@@ -72,8 +72,11 @@ try {
     if (!$product) {
         $normQuery = $normalize($slug);
         if ($normQuery !== '') {
-            $stmt = $pdo->prepare("SELECT {$selectCols} FROM products WHERE is_active = 1 AND (title_ar LIKE :like_title OR title_en LIKE :like_title) LIMIT 10");
-            $stmt->execute(['like_title' => '%'. $normQuery . '%']);
+            $stmt = $pdo->prepare("SELECT {$selectCols} FROM products WHERE is_active = 1 AND (title_ar LIKE :like_title_ar OR title_en LIKE :like_title_en) LIMIT 10");
+            $stmt->execute([
+                'like_title_ar' => '%'. $normQuery . '%',
+                'like_title_en' => '%'. $normQuery . '%',
+            ]);
             $candidates = $stmt->fetchAll();
 
             foreach ($candidates as $candidate) {
@@ -118,8 +121,11 @@ try {
         }
         if (!$author && !empty($product['author_ar']) && $product['author_ar'] !== '—') {
             try {
-                $stmtA = $pdo->prepare('SELECT id, slug, name_ar, name_en, photo_url, bio_ar, bio_en FROM authors WHERE (name_ar = :name OR name_en = :name) AND is_active = 1 LIMIT 1');
-                $stmtA->execute(['name' => $product['author_ar']]);
+                $stmtA = $pdo->prepare('SELECT id, slug, name_ar, name_en, photo_url, bio_ar, bio_en FROM authors WHERE (name_ar = :name_ar OR name_en = :name_en) AND is_active = 1 LIMIT 1');
+                $stmtA->execute([
+                    'name_ar' => $product['author_ar'],
+                    'name_en' => $product['author_ar'],
+                ]);
                 $author = $stmtA->fetch() ?: null;
             } catch (\Throwable $e) {}
         }

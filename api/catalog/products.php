@@ -39,7 +39,7 @@ try {
         $params['category_id'] = $categoryId;
     }
 
-    $sql .= ' ORDER BY display_order ASC, created_at DESC';
+    $sql .= ' ORDER BY (CASE WHEN cover_url IS NOT NULL AND cover_url != "" THEN 0 ELSE 1 END) ASC, display_order ASC, created_at DESC';
     if ($limit !== null) {
         $sql .= ' LIMIT ' . $limit;
     }
