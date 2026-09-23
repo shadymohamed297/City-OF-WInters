@@ -7,7 +7,7 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 
 $pdo = Database::connection();
 
-$stmt = $pdo->prepare('SELECT id, slug, name_ar, name_en, description_ar, description_en, image_url, display_order, is_active FROM categories WHERE is_active = 1 ORDER BY display_order ASC');
+$stmt = $pdo->prepare('SELECT id, slug, name_ar, name_en, description_ar, description_en, image_url, display_order, nav_order, parent_id, show_in_nav, icon, is_active FROM categories WHERE is_active = 1 ORDER BY display_order ASC');
 $stmt->execute();
 $categories = $stmt->fetchAll();
 

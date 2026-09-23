@@ -34,9 +34,10 @@ try {
         }
         $categoryId = $cat['id'];
 
-        // Direct category_id match
-        $sql .= ' AND category_id = :category_id';
+        // Match by primary category_id or junction product_categories
+        $sql .= ' AND (category_id = :category_id OR id IN (SELECT product_id FROM product_categories WHERE category_id = :cat_id_sub))';
         $params['category_id'] = $categoryId;
+        $params['cat_id_sub'] = $categoryId;
     }
 
     $sql .= ' ORDER BY (CASE WHEN cover_url IS NOT NULL AND cover_url != "" THEN 0 ELSE 1 END) ASC, display_order ASC, created_at DESC';
