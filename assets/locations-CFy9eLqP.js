@@ -673,7 +673,7 @@ export function component() {
                 className: "relative w-full",
                 children: [
                   e.jsx("div", {
-                    className: "absolute inset-y-0 start-0 flex items-center ps-4 pointer-events-none text-muted-foreground",
+                    className: "absolute inset-y-0 flex items-center pointer-events-none text-muted-foreground", style: isAr ? { right: "1rem" } : { left: "1rem" },
                     children: e.jsx(SearchIcon, { className: "h-5 w-5" })
                   }),
                   e.jsx("input", {
@@ -685,7 +685,7 @@ export function component() {
                         ? "ابحث باسم المكتبة، الفرع، أو المنطقة في مصر..."
                         : "ابحث باسم المكتبة، الدولة، أو المدينة..."
                       : "Search by bookstore name, city, or address...",
-                    className: "w-full h-12 ps-11 pe-10 rounded-xl bg-background border border-input text-foreground placeholder:text-muted-foreground text-sm focus:border-primary focus:ring-2 focus:ring-primary/15 focus:outline-none transition-all"
+                    className: "w-full h-12 rounded-xl bg-background border border-input text-foreground placeholder:text-muted-foreground text-sm focus:border-primary focus:ring-2 focus:ring-primary/15 focus:outline-none transition-all", style: isAr ? { paddingRight: "2.75rem", paddingLeft: "2rem" } : { paddingLeft: "2.75rem", paddingRight: "2rem" }
                   }),
                   searchQuery &&
                     e.jsx("button", {
@@ -904,7 +904,7 @@ export function component() {
                                 href: `https://wa.me/${cleanWa}?text=${waMsg}`,
                                 target: "_blank",
                                 rel: "noopener noreferrer",
-                                className: "flex-1 inline-flex items-center justify-center gap-1.5 h-10 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-colors shadow-sm",
+                                className: "flex-1 inline-flex items-center justify-center gap-1.5 h-10 px-3 rounded-xl font-bold text-xs transition-opacity hover:opacity-90 shadow-sm", style: { backgroundColor: "#25D366", color: "#ffffff" },
                                 children: [
                                   e.jsx(WhatsAppIcon, { className: "h-4 w-4" }),
                                   e.jsx("span", { children: isAr ? "واتساب" : "WhatsApp" })
@@ -948,7 +948,7 @@ export function component() {
           e.jsx("section", {
             className: "mt-16 md:mt-20",
             children: e.jsxs("div", {
-              className: "relative rounded-3xl bg-gradient-to-r from-[#103657] via-[#16446e] to-[#1e588d] text-white p-8 md:p-12 overflow-hidden shadow-xl",
+              className: "relative rounded-3xl text-white p-8 md:p-12 overflow-hidden shadow-xl", style: { background: "linear-gradient(135deg, #0F2A44 0%, #16426C 50%, #1E5C96 100%)" },
               children: [
                 // Background decoration
                 e.jsx("div", {
@@ -993,7 +993,7 @@ export function component() {
                             ),
                           target: "_blank",
                           rel: "noopener noreferrer",
-                          className: "inline-flex items-center gap-2 h-12 px-6 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm transition-all shadow-md hover:scale-105 active:scale-95",
+                          className: "inline-flex items-center gap-2 h-12 px-6 rounded-xl font-bold text-sm transition-all shadow-md hover:scale-105 active:scale-95", style: { backgroundColor: "#25D366", color: "#ffffff" },
                           children: [
                             e.jsx(WhatsAppIcon, { className: "h-5 w-5" }),
                             e.jsx("span", {
