@@ -10,6 +10,7 @@ return [
         '/catalog/categories' => __DIR__ . '/api/catalog/categories.php',
         '/catalog/related' => __DIR__ . '/api/catalog/related.php',
         '/catalog/search' => __DIR__ . '/api/catalog/search.php',
+        '/catalog/points-of-sale' => __DIR__ . '/api/catalog/points-of-sale.php',
         '/settings/public' => __DIR__ . '/api/settings/public.php',
         '/shipping/rates' => __DIR__ . '/api/shipping/rates.php',
         '/rates' => __DIR__ . '/api/shipping/rates.php',
