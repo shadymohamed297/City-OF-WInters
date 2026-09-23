@@ -9,10 +9,10 @@ use App\Response;
 require_once __DIR__ . '/../vendor/autoload.php';
 
 try {
-     = Database::connection();
+    $pdo = Database::connection();
 
     // 1. Ensure product_categories junction table exists
-    ->exec("
+    $pdo->exec("
         CREATE TABLE IF NOT EXISTS `product_categories` (
           `product_id` char(36) NOT NULL,
           `category_id` char(36) NOT NULL,
@@ -22,13 +22,13 @@ try {
     ");
 
     // 2. Check if 'latest-categories' exists
-     = ->prepare("SELECT id FROM categories WHERE slug = 'latest-categories' LIMIT 1");
-    ->execute();
-     = ->fetchColumn();
+    $stmt = $pdo->prepare("SELECT id FROM categories WHERE slug = 'latest-categories' LIMIT 1");
+    $stmt->execute();
+    $latestCatId = $stmt->fetchColumn();
 
-    if (!) {
-         = Database::uuid();
-         = ->prepare("
+    if (!$latestCatId) {
+        $latestCatId = Database::uuid();
+        $ins = $pdo->prepare("
             INSERT INTO categories (
                 id, slug, name_ar, name_en, description_ar, description_en,
                 display_order, nav_order, show_in_nav, icon, is_active
@@ -39,19 +39,19 @@ try {
                 0, 0, 1, '✨', 1
             )
         ");
-        ->execute(['id' => ]);
+        $ins->execute(['id' => $latestCatId]);
     } else {
-         = ->prepare("
+        $upd = $pdo->prepare("
             UPDATE categories 
             SET name_ar = 'أحدث التصنيفات', name_en = 'Newest Categories',
                 display_order = 0, nav_order = 0, icon = '✨', is_active = 1
             WHERE id = :id
         ");
-        ->execute(['id' => ]);
+        $upd->execute(['id' => $latestCatId]);
     }
 
     // 3. Update 'اكثر مبيعا' to display_order = 1 and name_ar = 'الأكثر مبيعاً'
-    ->exec("
+    $pdo->exec("
         UPDATE categories 
         SET name_ar = 'الأكثر مبيعاً', name_en = 'Best Sellers',
             display_order = 1, nav_order = 1, icon = '🏆', is_active = 1
@@ -59,70 +59,70 @@ try {
     ");
 
     // 4. Update order of other categories
-    ->exec("UPDATE categories SET display_order = 2, nav_order = 2 WHERE slug = 'novels'");
-    ->exec("UPDATE categories SET display_order = 3, nav_order = 3 WHERE slug = 'science'");
-    ->exec("UPDATE categories SET display_order = 4, nav_order = 4 WHERE slug = 'history'");
-    ->exec("UPDATE categories SET display_order = 5, nav_order = 5 WHERE slug = 'children'");
-    ->exec("UPDATE categories SET display_order = 6, nav_order = 6 WHERE slug = 'self-help'");
+    $pdo->exec("UPDATE categories SET display_order = 2, nav_order = 2 WHERE slug = 'novels'");
+    $pdo->exec("UPDATE categories SET display_order = 3, nav_order = 3 WHERE slug = 'science'");
+    $pdo->exec("UPDATE categories SET display_order = 4, nav_order = 4 WHERE slug = 'history'");
+    $pdo->exec("UPDATE categories SET display_order = 5, nav_order = 5 WHERE slug = 'children'");
+    $pdo->exec("UPDATE categories SET display_order = 6, nav_order = 6 WHERE slug = 'self-help'");
 
     // 5. Populate product_categories with top 30 active products for 'latest-categories'
-     = ->query("
+    $topProducts = $pdo->query("
         SELECT id FROM products 
         WHERE is_active = 1 
         ORDER BY (CASE WHEN cover_url IS NOT NULL AND cover_url != '' THEN 0 ELSE 1 END) ASC, created_at DESC 
         LIMIT 30
     ")->fetchAll(PDO::FETCH_COLUMN);
 
-     = ->prepare("DELETE FROM product_categories WHERE category_id = :cid");
-    ->execute(['cid' => ]);
+    $del = $pdo->prepare("DELETE FROM product_categories WHERE category_id = :cid");
+    $del->execute(['cid' => $latestCatId]);
 
-     = ->prepare("INSERT IGNORE INTO product_categories (product_id, category_id) VALUES (:pid, :cid)");
-     = 0;
-    foreach ( as ) {
-        ->execute(['pid' => , 'cid' => ]);
-        ++;
+    $insJunction = $pdo->prepare("INSERT IGNORE INTO product_categories (product_id, category_id) VALUES (:pid, :cid)");
+    $linkedCount = 0;
+    foreach ($topProducts as $pid) {
+        $insJunction->execute(['pid' => $pid, 'cid' => $latestCatId]);
+        $linkedCount++;
     }
 
     // 6. Set is_new_arrival = 1 for the 16 newest products with covers
-    ->exec("UPDATE products SET is_new_arrival = 0");
-     = ->query("
+    $pdo->exec("UPDATE products SET is_new_arrival = 0");
+    $newArrivalIds = $pdo->query("
         SELECT id FROM products 
         WHERE is_active = 1 AND cover_url IS NOT NULL AND cover_url != ''
         ORDER BY created_at DESC 
         LIMIT 16
     ")->fetchAll(PDO::FETCH_COLUMN);
-    if (!empty()) {
-         = implode("','", );
-        ->exec("UPDATE products SET is_new_arrival = 1 WHERE id IN ('')");
+    if (!empty($newArrivalIds)) {
+        $inNew = implode("','", $newArrivalIds);
+        $pdo->exec("UPDATE products SET is_new_arrival = 1 WHERE id IN ('$inNew')");
     }
 
     // 7. Set is_bestseller = 1 for top 16 popular books
-    ->exec("UPDATE products SET is_bestseller = 0");
-     = ->query("
+    $pdo->exec("UPDATE products SET is_bestseller = 0");
+    $bestsellerIds = $pdo->query("
         SELECT id FROM products 
         WHERE is_active = 1 AND cover_url IS NOT NULL AND cover_url != ''
           AND (price_usd >= 7 OR author_ar IN ('رحمة نبيل', 'روز أمين', 'نورهان العشري', 'أية محمد رفعت'))
         ORDER BY rating DESC, price DESC 
         LIMIT 16
     ")->fetchAll(PDO::FETCH_COLUMN);
-    if (!empty()) {
-         = implode("','", );
-        ->exec("UPDATE products SET is_bestseller = 1 WHERE id IN ('')");
+    if (!empty($bestsellerIds)) {
+        $inBest = implode("','", $bestsellerIds);
+        $pdo->exec("UPDATE products SET is_bestseller = 1 WHERE id IN ('$inBest')");
     }
 
     // 8. Return stats
-     = ->query("SELECT id, slug, name_ar, name_en, display_order, nav_order, icon FROM categories WHERE is_active = 1 ORDER BY display_order ASC")->fetchAll();
-     = (int) ->query("SELECT COUNT(*) FROM products WHERE is_bestseller = 1")->fetchColumn();
-     = (int) ->query("SELECT COUNT(*) FROM products WHERE is_new_arrival = 1")->fetchColumn();
+    $allCats = $pdo->query("SELECT id, slug, name_ar, name_en, display_order, nav_order, icon FROM categories WHERE is_active = 1 ORDER BY display_order ASC")->fetchAll();
+    $bestsellerCount = (int) $pdo->query("SELECT COUNT(*) FROM products WHERE is_bestseller = 1")->fetchColumn();
+    $newArrivalCount = (int) $pdo->query("SELECT COUNT(*) FROM products WHERE is_new_arrival = 1")->fetchColumn();
 
     Response::ok([
         'message' => 'Categories reordered successfully!',
-        'latest_category_id' => ,
-        'linked_products_to_latest' => ,
-        'bestseller_count' => ,
-        'new_arrival_count' => ,
-        'categories' => ,
+        'latest_category_id' => $latestCatId,
+        'linked_products_to_latest' => $linkedCount,
+        'bestseller_count' => $bestsellerCount,
+        'new_arrival_count' => $newArrivalCount,
+        'categories' => $allCats,
     ]);
-} catch (\Throwable ) {
-    Response::serverError(->getMessage() . ' in ' . ->getFile() . ':' . ->getLine());
+} catch (\Throwable $e) {
+    Response::serverError($e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
 }
