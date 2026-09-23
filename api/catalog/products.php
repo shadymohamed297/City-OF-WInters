@@ -60,6 +60,11 @@ try {
                 $p['slug'] = $c;
             }
         }
+        $p['is_active'] = (bool) $p['is_active'];
+        $p['is_bestseller'] = (bool) $p['is_bestseller'];
+        $p['is_new_arrival'] = (bool) $p['is_new_arrival'];
+        $p['is_featured'] = (bool) $p['is_featured'];
+        $p['unlimited_stock'] = (bool) $p['unlimited_stock'];
     }
     unset($p);
 
