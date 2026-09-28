@@ -391,6 +391,28 @@ function PublishPage() {
                     ]
                   })
                 )
+              }),
+              // CTA Button to Submit Work
+              e.jsx("div", {
+                className: "text-center pt-6 pb-2",
+                children: e.jsxs("a", {
+                  href: "/submit-work",
+                  className: "inline-flex flex-col items-center justify-center gap-1.5 px-8 md:px-12 py-4 md:py-5 rounded-2xl text-white font-bold shadow-xl hover:scale-105 active:scale-95 transition-all group mx-auto border border-white/10",
+                  style: {
+                    background: "linear-gradient(135deg, #0A2540 0%, #1e4266 100%)",
+                    boxShadow: "0 12px 30px -8px rgba(10, 37, 64, 0.35)"
+                  },
+                  children: [
+                    e.jsx("span", {
+                      className: "text-lg md:text-xl font-display font-extrabold text-white group-hover:text-amber-300 transition-colors",
+                      children: isAr ? "قدّم عملك للنشر ←" : "Submit Your Work for Publishing →"
+                    }),
+                    e.jsx("span", {
+                      className: "text-xs md:text-sm text-white/80 font-medium group-hover:text-white transition-colors",
+                      children: isAr ? "ابدأ خطواتك الأولى نحو النشر مع مدينة الأدباء" : "Start your publishing journey with Madinat Al-Odabaa"
+                    })
+                  ]
+                })
               })
             ]
           }),
