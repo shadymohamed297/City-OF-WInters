@@ -363,11 +363,11 @@ function SubmitWorkPage() {
       e.jsx("div", {
         className: "container-page py-8 md:py-12",
         children: e.jsxs("div", {
-          className: "grid grid-cols-1 lg:grid-cols-12 gap-8 items-start",
+          className: "gap-8 items-start", style: { display: "flex", flexWrap: "wrap", gap: "2rem", alignItems: "flex-start" },
           children: [
             // RIGHT COLUMN: FORM (col-span-7)
             e.jsx("div", {
-              className: "lg:col-span-7 order-1 lg:order-2",
+              className: "order-1 lg:order-2", style: { flex: "1 1 540px", minWidth: "320px" },
               children: e.jsxs("div", {
                 className: "bg-card border border-border/80 rounded-2xl shadow-sm p-6 md:p-8 relative",
                 children: [
@@ -489,7 +489,8 @@ function SubmitWorkPage() {
                                 onChange: handleChange,
                                 className: "w-full h-11 ps-20 pe-4 rounded-xl border border-input bg-background text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all",
                                 placeholder: "010 0123 4567",
-                                dir: "ltr"
+                                dir: "ltr",
+                                style: { paddingLeft: "4.75rem", paddingRight: "1rem" }
                               })
                             ]
                           })
@@ -687,7 +688,7 @@ function SubmitWorkPage() {
 
             // LEFT COLUMN: 6 PUBLISHING STAGES SIDEBAR (col-span-5)
             e.jsx("div", {
-              className: "lg:col-span-5 order-2 lg:order-1",
+              className: "order-2 lg:order-1", style: { flex: "1 1 380px", minWidth: "300px" },
               children: e.jsxs("div", {
                 className: "space-y-4",
                 children: [
