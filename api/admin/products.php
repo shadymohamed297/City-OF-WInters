@@ -59,6 +59,7 @@ if ($method === 'POST') {
         'marketing_cost' => Validator::number($input['marketing_cost'] ?? 0, 0, 1000000),
         'misc_expenses' => Validator::number($input['misc_expenses'] ?? 0, 0, 1000000),
         'cover_url' => Validator::stringOrNull($input['cover_url'] ?? '', 5000),
+        'abjjad_url' => Validator::stringOrNull($input['abjjad_url'] ?? '', 500),
         'category_id' => filter_var($input['category_id'] ?? null, FILTER_VALIDATE_UUID) ?: null,
         'author_id' => filter_var($input['author_id'] ?? null, FILTER_VALIDATE_UUID) ?: null,
         'pages' => Validator::intOrNull($input['pages'] ?? null, 0, 20000),
