@@ -255,22 +255,8 @@ function PublishPage() {
   const services = isAr ? SERVICES_AR : SERVICES_EN;
 
   const mailtoLink = isAr
-    ? "mailto:info@madinetalodabaa.com?subject=" + encodeURIComponent("طلب نشر عمل جديد - دار مدينة الأدباء") + "&body=" + encodeURIComponent("اسم المؤلف: 
-عنوان العمل: 
-نوع العمل (رواية / قصة / شعر / فكري / دراسة): 
-عدد الكلمات أو الصفحات التقريبي: 
-رقم الهاتف والواتساب: 
-ملخص موجز عن العمل: 
-
-يرجى إرفاق العمل بصيغة Word أو PDF مع هذه الرسالة.")
-    : "mailto:info@madinetalodabaa.com?subject=" + encodeURIComponent("Manuscript Submission - Madinat Al-Odabaa") + "&body=" + encodeURIComponent("Author Name: 
-Book Title: 
-Genre (Novel / Non-fiction / Poetry / Academic): 
-Estimated Word/Page Count: 
-Phone / WhatsApp: 
-Brief Synopsis: 
-
-Please attach your manuscript in Word or PDF format to this email.");
+    ? "mailto:info@madinetalodabaa.com?subject=" + encodeURIComponent("طلب نشر عمل جديد - دار مدينة الأدباء") + "&body=" + encodeURIComponent("اسم المؤلف: \nعنوان العمل: \nنوع العمل (رواية / قصة / شعر / فكري / دراسة): \nعدد الكلمات أو الصفحات التقريبي: \nرقم الهاتف والواتساب: \nملخص موجز عن العمل: \n\nيرجى إرفاق العمل بصيغة Word أو PDF مع هذه الرسالة.")
+    : "mailto:info@madinetalodabaa.com?subject=" + encodeURIComponent("Manuscript Submission - Madinat Al-Odabaa") + "&body=" + encodeURIComponent("Author Name: \nBook Title: \nGenre (Novel / Non-fiction / Poetry / Academic): \nEstimated Word/Page Count: \nPhone / WhatsApp: \nBrief Synopsis: \n\nPlease attach your manuscript in Word or PDF format to this email.");
 
   const whatsappMsg = isAr
     ? "مرحباً دار مدينة الأدباء، أود الاستفسار عن تفاصيل وتقديم عمل أدبي جديد للنشر والتوزيع معكم."
