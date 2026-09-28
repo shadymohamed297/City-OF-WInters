@@ -1,4 +1,4 @@
-import { c as React, l as e, o as useStore, p as cn, L as Link } from "./index-Dmn91ErK.js";
+import { c as React, l as e, o as useStore, p as cn } from "./index-Dmn91ErK.js";
 
 const { useState } = React;
 
@@ -291,7 +291,7 @@ Please attach your manuscript in Word or PDF format to this email.");
             e.jsxs("nav", {
               className: "flex items-center justify-center gap-2 text-xs md:text-sm text-muted-foreground mb-6",
               children: [
-                e.jsx(Link, { to: "/", className: "hover:text-primary transition-colors", children: isAr ? "الرئيسية" : "Home" }),
+                e.jsx("a", { href: "/", className: "hover:text-primary transition-colors", children: isAr ? "الرئيسية" : "Home" }),
                 e.jsx("span", { children: "/" }),
                 e.jsx("span", { className: "text-foreground font-medium", children: isAr ? "انشر معنا" : "Publish with Us" })
               ]
