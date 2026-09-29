@@ -33,6 +33,14 @@ class Validator
         return $int;
     }
 
+    public static function intOrNull(mixed $value, ?int $min = null, ?int $max = null, ?string $label = null): ?int
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+        return self::int($value, $min, $max, $label);
+    }
+
     public static function number(mixed $value, ?float $min = null, ?float $max = null, ?string $label = null): float
     {
         $num = filter_var($value, FILTER_VALIDATE_FLOAT);
@@ -46,6 +54,14 @@ class Validator
             Response::validationError(($label ?? 'Field') . ' must not exceed ' . $max);
         }
         return $num;
+    }
+
+    public static function numberOrNull(mixed $value, ?float $min = null, ?float $max = null, ?string $label = null): ?float
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+        return self::number($value, $min, $max, $label);
     }
 
     public static function bool(mixed $value, ?string $label = null): bool
