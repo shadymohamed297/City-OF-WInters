@@ -89,6 +89,18 @@ class Validator
         return $value;
     }
 
+    public static function uuidOrNull(mixed $value): ?string
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+        $val = trim((string) $value);
+        if (!preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $val)) {
+            return null;
+        }
+        return $val;
+    }
+
     public static function enum(string $value, array $allowed, ?string $label = null): string
     {
         if (!in_array($value, $allowed, true)) {

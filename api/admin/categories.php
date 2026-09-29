@@ -44,7 +44,7 @@ if ($method === 'POST') {
         'icon' => Validator::stringOrNull($input['icon'] ?? '', 50),
         'display_order' => Validator::int($input['display_order'] ?? 0, 0, 9999),
         'nav_order' => Validator::int($input['nav_order'] ?? 0, 0, 9999),
-        'parent_id' => filter_var($input['parent_id'] ?? null, FILTER_VALIDATE_UUID) ?: null,
+        'parent_id' => Validator::uuidOrNull($input['parent_id'] ?? null),
         'show_in_nav' => Validator::bool($input['show_in_nav'] ?? true),
         'is_active' => Validator::bool($input['is_active'] ?? true),
     ];

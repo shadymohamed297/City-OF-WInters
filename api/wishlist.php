@@ -39,10 +39,7 @@ $user = $auth->requireAuth();
 $input = json_decode(file_get_contents('php://input'), true) ?: $_POST;
 
 if ($method === 'POST') {
-    $productId = filter_var($input['product_id'] ?? '', FILTER_VALIDATE_UUID);
-    if (!$productId) {
-        Response::validationError('Invalid product_id');
-    }
+    $productId = Validator::uuid($input['product_id'] ?? '');
 
     $stmt = $pdo->prepare('SELECT id FROM wishlist WHERE user_id = :user_id AND product_id = :product_id LIMIT 1');
     $stmt->execute(['user_id' => $user['id'], 'product_id' => $productId]);
@@ -60,10 +57,7 @@ if ($method === 'POST') {
 }
 
 if ($method === 'DELETE') {
-    $productId = filter_var($input['product_id'] ?? '', FILTER_VALIDATE_UUID);
-    if (!$productId) {
-        Response::validationError('Invalid product_id');
-    }
+    $productId = Validator::uuid($input['product_id'] ?? '');
 
     $stmt = $pdo->prepare('DELETE FROM wishlist WHERE user_id = :user_id AND product_id = :product_id');
     $stmt->execute(['user_id' => $user['id'], 'product_id' => $productId]);
