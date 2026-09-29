@@ -80,11 +80,20 @@ if ($method === 'POST') {
 
         // If author_id not set but author_ar is known, auto-match author
         if (empty($data['author_id']) && $authorAr !== '' && $authorAr !== '—') {
-            $aLookup = $pdo->prepare('SELECT id FROM authors WHERE name_ar = :name_ar OR name_en = :name_en OR REPLACE(REPLACE(REPLACE(name_ar, "أ", "ا"), "إ", "ا"), "آ", "ا") = REPLACE(REPLACE(REPLACE(:name_ar2, "أ", "ا"), "إ", "ا"), "آ", "ا") LIMIT 1');
-            $aLookup->execute(['name_ar' => $authorAr, 'name_en' => $authorAr, 'name_ar2' => $authorAr]);
-            $aRow = $aLookup->fetch();
-            if ($aRow) {
-                $data['author_id'] = $aRow['id'];
+            $aLookup = $pdo->prepare('SELECT id, name_ar, name_en FROM authors');
+            $aLookup->execute();
+            $allAuthors = $aLookup->fetchAll();
+            $cleanInput = preg_replace('/[أإآا]/u', 'ا', trim($authorAr));
+            foreach ($allAuthors as $aRow) {
+                if ($aRow['name_ar'] === $authorAr || $aRow['name_en'] === $authorAr) {
+                    $data['author_id'] = $aRow['id'];
+                    break;
+                }
+                $cleanAuthor = preg_replace('/[أإآا]/u', 'ا', trim($aRow['name_ar'] ?? ''));
+                if ($cleanInput !== '' && $cleanInput === $cleanAuthor) {
+                    $data['author_id'] = $aRow['id'];
+                    break;
+                }
             }
         }
 
