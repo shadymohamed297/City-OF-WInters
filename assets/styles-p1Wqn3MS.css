@@ -5,3 +5,36 @@
 div.fixed.inset-0.z-50 { z-index: 99999 !important; }
 
 header.sticky, header.z-[100] { z-index: 40 !important; }
+
+/* Comprehensive Cart Drawer & Layering Fix */
+header.sticky {
+  z-index: 40 !important;
+}
+
+div.fixed.inset-0.z-50 {
+  z-index: 999999 !important;
+}
+
+div.fixed.inset-0.z-50 aside {
+  position: fixed !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  right: 0 !important;
+  left: auto !important;
+  max-width: 28rem !important;
+  width: 100% !important;
+  z-index: 1000000 !important;
+  background-color: hsl(var(--background)) !important;
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.25) !important;
+  transform: none !important;
+}
+
+html[dir="ltr"] div.fixed.inset-0.z-50 aside {
+  right: 0 !important;
+  left: auto !important;
+}
+
+html[dir="rtl"] div.fixed.inset-0.z-50 aside {
+  right: 0 !important;
+  left: auto !important;
+}
