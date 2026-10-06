@@ -217,7 +217,7 @@ function PublishPage() {
 
           // Key Advantages
           e.jsxs("section", {
-            className: "space-y-6",
+            className: "space-y-8 pt-12 md:pt-20 border-t border-border/60",
             children: [
               e.jsxs("div", {
                 className: "text-center space-y-1",
