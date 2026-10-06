@@ -30,7 +30,7 @@ $street = Validator::string($input['street'] ?? '', 200, 'Street');
 $building = Validator::stringOrNull($input['building'] ?? '', 60, 'Building');
 $apartment = Validator::stringOrNull($input['apartment'] ?? '', 60, 'Apartment');
 $notes = Validator::stringOrNull($input['notes'] ?? '', 500, 'Notes');
-$paymentMethod = Validator::enum($input['payment_method'] ?? 'cod', ['cod'], 'Payment method');
+$paymentMethod = Validator::enum($input['payment_method'] ?? 'cod', ['cod', 'paytabs'], 'Payment method');
 $couponCode = Validator::stringOrNull($input['coupon_code'] ?? '', 50, 'Coupon code');
 
 $itemsInput = $input['items'] ?? [];
@@ -152,24 +152,34 @@ try {
     $orderNumber = 'ORD-' . ($seq ? (int)$seq['next_val'] : 10001);
     $pdo->exec('UPDATE order_number_seq SET next_val = next_val + 1');
 
-    $orderId = $pdo->lastInsertId();
-        'user_id' => $authUserId,
-        'guest_email' => $input['email'] ?? null,
-        'guest_phone' => $phone,
-        'guest_name' => $fullName,
-        'status' => 'pending',
-        'payment_method' => $paymentMethod,
-        'payment_status' => 'pending',
-        'subtotal' => $subtotal,
-        'shipping_cost' => $shipping,
-        'discount' => $discount,
-        'total' => $total,
+    $orderId = Database::uuid();
+    $stmt = $pdo->prepare('
+        INSERT INTO orders (id, order_number, user_id, guest_email, guest_phone, guest_name,
+            status, payment_method, payment_status, subtotal, shipping_cost, discount, total,
+            shipping_address, notes, coupon_code, coupon_id)
+        VALUES (:id, :order_number, :user_id, :guest_email, :guest_phone, :guest_name,
+            :status, :payment_method, :payment_status, :subtotal, :shipping_cost, :discount, :total,
+            :shipping_address, :notes, :coupon_code, :coupon_id)
+    ');
+    $stmt->execute([
+        'id'               => $orderId,
+        'order_number'     => $orderNumber,
+        'user_id'          => $authUserId,
+        'guest_email'      => $input['email'] ?? null,
+        'guest_phone'      => $phone,
+        'guest_name'       => $fullName,
+        'status'           => 'pending',
+        'payment_method'   => $paymentMethod,
+        'payment_status'   => 'pending',
+        'subtotal'         => $subtotal,
+        'shipping_cost'    => $shipping,
+        'discount'         => $discount,
+        'total'            => $total,
         'shipping_address' => json_encode($shippingAddress, JSON_UNESCAPED_UNICODE),
-        'notes' => $notes,
-        'coupon_code' => $couponCodeStored,
-        'coupon_id' => $couponId,
+        'notes'            => $notes,
+        'coupon_code'      => $couponCodeStored,
+        'coupon_id'        => $couponId,
     ]);
-    $orderId = $pdo->lastInsertId();
 
     foreach ($orderItems as $item) {
         $stmt = $pdo->prepare('INSERT INTO order_items (order_id, product_id, product_title_ar, product_title_en, product_cover, unit_price, quantity, line_total) VALUES (:order_id, :product_id, :product_title_ar, :product_title_en, :product_cover, :unit_price, :quantity, :line_total)');
