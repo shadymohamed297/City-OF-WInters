@@ -11,10 +11,7 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 Csrf::middleware();
 
 $pdo = Database::connection();
-$rateLimiter = new RateLimiter($pdo);
-
 $clientIp = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
-$rateLimiter->check('paytabs_init:' . $clientIp, 10, 60);
 
 $input = json_decode(file_get_contents('php://input'), true) ?: $_POST;
 
