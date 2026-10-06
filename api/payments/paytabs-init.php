@@ -29,7 +29,9 @@ $notes       = Validator::stringOrNull($input['notes'] ?? '', 500);
 $email       = Validator::stringOrNull($input['email'] ?? '', 255);
 $couponCode  = Validator::stringOrNull($input['coupon_code'] ?? '', 50);
 
-$requestedCurrency = strtoupper(trim($input['currency'] ?? 'EGP'));
+$requestedCurrency$requestedCurrency = strtoupper(trim($input['currency'] ?? 'EGP'));
+// PayTabs profile 155739 settles in EGP. If international checkout sends USD, calculate total in USD for display, but charge in EGP or convert to EGP based on current rate.
+$settlementCurrency = 'EGP';
 $currency = in_array($requestedCurrency, ['EGP', 'USD'], true) ? $requestedCurrency : 'EGP';
 
 if ($currency === 'EGP' && !preg_match('/^01[0125][0-9]{8}$/', $phone)) {
@@ -156,8 +158,8 @@ $ptPayload = [
     'tran_type'        => 'sale',
     'tran_class'       => 'ecom',
     'cart_id'          => $orderId,
-    'cart_currency'    => $currency,
-    'cart_amount'      => $total,
+    'cart_currency'    => 'EGP',
+    'cart_amount'      => ($currency === 'USD' ? round($total * 50, 2) : $total),
     'cart_description' => $cartDesc,
     'customer_details' => [
         'name'    => $fullName,
