@@ -164,7 +164,7 @@ function PublishPage() {
 
       // Main Content
       e.jsxs("div", {
-        className: "container-page max-w-4xl mx-auto px-4 py-12 space-y-16",
+        className: "container-page max-w-4xl mx-auto px-4 py-12 space-y-24 md:space-y-32",
         children: [
           // 4-Step Publishing Workflow
           e.jsxs("section", {
@@ -259,28 +259,50 @@ function PublishPage() {
 
           // Final Call to Action
           e.jsx("section", {
-            className: "rounded-2xl border border-border bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 p-8 text-center space-y-4",
+            className: "relative rounded-3xl overflow-hidden p-10 md:p-14 text-center text-white shadow-2xl",
+            style: {
+              background: "linear-gradient(135deg, #091D34 0%, #0F3760 40%, #155088 100%)"
+            },
             children: e.jsxs("div", {
-              className: "max-w-xl mx-auto space-y-3",
+              className: "relative z-10 max-w-2xl mx-auto space-y-6",
               children: [
+                e.jsxs("div", {
+                  className: "inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold",
+                  style: {
+                    background: "linear-gradient(135deg, #FDE68A 0%, #F59E0B 100%)",
+                    color: "#0A2540"
+                  },
+                  children: [
+                    e.jsx(SparklesIcon, { className: "h-3.5 w-3.5" }),
+                    e.jsx("span", { children: isAr ? "خطوتك الأولى نحو عالم النشر" : "Your First Step Into Publishing" })
+                  ]
+                }),
                 e.jsx("h3", {
-                  className: "font-display font-bold text-xl md:text-2xl text-foreground",
-                  children: isAr ? "هل مخطوطتك جاهزة للمراجعة؟" : "Is Your Manuscript Ready?"
+                  className: "font-display font-black text-2xl md:text-4xl text-white tracking-tight leading-snug",
+                  children: isAr ? "هل مخطوطتك جاهزة للانطلاق؟" : "Is Your Manuscript Ready to Launch?"
                 }),
                 e.jsx("p", {
-                  className: "text-xs md:text-sm text-muted-foreground",
+                  className: "text-sm md:text-base text-white/80 leading-relaxed max-w-lg mx-auto",
                   children: isAr
-                    ? "املأ نموذج التقديم وسيقوم فريق القراءة بالرد عليك خلال فترة وجيزة."
-                    : "Complete the submission form and our reading committee will review it promptly."
+                    ? "أرسل عملك الآن واجعل دار مدينة الأدباء بوابتك نحو عالم النشر الورقي والانتشار في معارض الكتاب الدولية."
+                    : "Submit your work now and make Madinat Al-Odabaa your gateway to global book distribution."
                 }),
                 e.jsx("div", {
-                  className: "pt-2",
+                  className: "pt-4",
                   children: e.jsxs("a", {
                     href: "/submit-work",
-                    className: "inline-flex items-center gap-2 px-7 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm shadow hover:bg-primary-hover transition-colors",
+                    className: "inline-flex items-center justify-center gap-3 px-10 md:px-14 py-5 md:py-6 rounded-2xl font-black text-lg md:text-xl shadow-2xl hover:scale-105 active:scale-95 transition-all group border-2 border-amber-300/40",
+                    style: {
+                      background: "linear-gradient(135deg, #FDE68A 0%, #F59E0B 100%)",
+                      color: "#0A2540",
+                      boxShadow: "0 15px 35px -5px rgba(245, 158, 11, 0.4)"
+                    },
                     children: [
-                      e.jsx("span", { children: isAr ? "بدء تقديم العمل" : "Start Submission" }),
-                      e.jsx(ArrowLeftIcon, { className: isAr ? "h-4 w-4" : "h-4 w-4 rotate-180" })
+                      e.jsx("span", {
+                        className: "group-hover:tracking-wider transition-all",
+                        children: isAr ? "ابدأ تقديم عملك الآن" : "Start Your Submission Now"
+                      }),
+                      e.jsx(ArrowLeftIcon, { className: isAr ? "h-6 w-6 stroke-[3] group-hover:-translate-x-1 transition-transform" : "h-6 w-6 stroke-[3] rotate-180 group-hover:translate-x-1 transition-transform" })
                     ]
                   })
                 })
