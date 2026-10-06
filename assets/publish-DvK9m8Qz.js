@@ -293,20 +293,59 @@ function PublishPage() {
                   className: "pt-4",
                   children: e.jsxs("a", {
                     href: "/submit-work",
-                    className: "inline-flex items-center justify-center gap-3 px-10 md:px-14 py-5 md:py-6 rounded-2xl font-black text-lg md:text-xl shadow-2xl hover:scale-105 active:scale-95 transition-all group border-2 border-amber-300/40",
+                    className: "inline-flex items-center justify-center gap-4 px-12 md:px-20 py-5 md:py-6 rounded-full font-black text-xl md:text-2xl shadow-2xl hover:scale-105 active:scale-95 transition-all group border-2 border-amber-300/50",
                     style: {
                       background: "linear-gradient(135deg, #FDE68A 0%, #F59E0B 100%)",
                       color: "#0A2540",
-                      boxShadow: "0 15px 35px -5px rgba(245, 158, 11, 0.4)"
+                      boxShadow: "0 15px 40px -5px rgba(245, 158, 11, 0.45)"
                     },
                     children: [
                       e.jsx("span", {
-                        className: "group-hover:tracking-wider transition-all",
+                        className: "font-display tracking-tight group-hover:tracking-normal transition-all whitespace-nowrap",
                         children: isAr ? "ابدأ تقديم عملك الآن" : "Start Your Submission Now"
                       }),
-                      e.jsx(ArrowLeftIcon, { className: isAr ? "h-6 w-6 stroke-[3] group-hover:-translate-x-1 transition-transform" : "h-6 w-6 stroke-[3] rotate-180 group-hover:translate-x-1 transition-transform" })
+                      e.jsx(ArrowLeftIcon, { className: isAr ? "h-7 w-7 stroke-[3] shrink-0 group-hover:-translate-x-1.5 transition-transform" : "h-7 w-7 stroke-[3] rotate-180 shrink-0 group-hover:translate-x-1.5 transition-transform" })
                     ]
                   })
+                }),
+                // Contact Details (Email & Phone)
+                e.jsxs("div", {
+                  className: "pt-6 flex flex-wrap items-center justify-center gap-6 md:gap-10 text-sm text-white/90 border-t border-white/10 mt-6",
+                  children: [
+                    e.jsxs("a", {
+                      href: "mailto:info@madinetalodabaa.com",
+                      className: "inline-flex items-center gap-2 hover:text-amber-300 transition-colors font-medium",
+                      children: [
+                        e.jsx(MailIcon, { className: "h-4 w-4 text-amber-300" }),
+                        e.jsx("span", { dir: "ltr", children: "info@madinetalodabaa.com" })
+                      ]
+                    }),
+                    e.jsxs("a", {
+                      href: "tel:0233965060",
+                      className: "inline-flex items-center gap-2 hover:text-amber-300 transition-colors font-medium",
+                      children: [
+                        e.jsx("svg", {
+                          xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 24 24", fill: "none",
+                          stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round",
+                          className: "h-4 w-4 text-amber-300",
+                          children: [
+                            e.jsx("path", { d: "M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" })
+                          ]
+                        }),
+                        e.jsx("span", { dir: "ltr", children: "02-339-650-60" })
+                      ]
+                    }),
+                    e.jsxs("a", {
+                      href: "https://wa.me/201026600868",
+                      target: "_blank",
+                      rel: "noopener noreferrer",
+                      className: "inline-flex items-center gap-2 hover:text-emerald-400 transition-colors font-medium",
+                      children: [
+                        e.jsx(WhatsAppIcon, { className: "h-4 w-4 text-emerald-400" }),
+                        e.jsx("span", { dir: "ltr", children: "+20 102 660 0868" })
+                      ]
+                    })
+                  ]
                 })
               ]
             })
