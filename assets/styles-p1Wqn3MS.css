@@ -48,3 +48,49 @@ html.dark div.fixed.inset-0.z-50 aside {
 html.dark div.fixed.inset-0.z-50 aside {
   background-color: #0b1b2b !important;
 }
+
+/* Universal Form Inputs Border & Styling Fix */
+:root {
+  --input: #d0dbe7 !important;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]),
+textarea,
+select {
+  border: 1.5px solid #cbd5e1 !important;
+  border-radius: 0.5rem !important;
+  background-color: #ffffff !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):hover,
+textarea:hover,
+select:hover {
+  border-color: #94a3b8 !important;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):focus,
+textarea:focus,
+select:focus {
+  border-color: #1f7bc4 !important;
+  box-shadow: 0 0 0 3px rgba(31, 123, 196, 0.15) !important;
+  outline: none !important;
+}
+
+.border-input {
+  border-color: #cbd5e1 !important;
+}
+
+.dark input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]),
+.dark textarea,
+.dark select {
+  border: 1.5px solid #2a4365 !important;
+  background-color: #10263b !important;
+}
+
+.dark input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):focus,
+.dark textarea:focus,
+.dark select:focus {
+  border-color: #3aa0e0 !important;
+  box-shadow: 0 0 0 3px rgba(58, 160, 224, 0.2) !important;
+}
