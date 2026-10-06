@@ -217,7 +217,8 @@ function PublishPage() {
 
           // Key Advantages
           e.jsxs("section", {
-            className: "space-y-8 pt-12 md:pt-20 border-t border-border/60",
+            style: { marginTop: "100px", paddingTop: "60px", borderTop: "1px solid rgba(0,0,0,0.08)" },
+            className: "space-y-8",
             children: [
               e.jsxs("div", {
                 className: "text-center space-y-1",
@@ -259,6 +260,7 @@ function PublishPage() {
 
           // Final Call to Action
           e.jsx("section", {
+            style: { marginTop: "100px" },
             className: "relative rounded-3xl overflow-hidden p-10 md:p-14 text-center text-white shadow-2xl",
             style: {
               background: "linear-gradient(135deg, #091D34 0%, #0F3760 40%, #155088 100%)"
