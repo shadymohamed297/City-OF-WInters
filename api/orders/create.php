@@ -182,8 +182,9 @@ try {
     ]);
 
     foreach ($orderItems as $item) {
-        $stmt = $pdo->prepare('INSERT INTO order_items (order_id, product_id, product_title_ar, product_title_en, product_cover, unit_price, quantity, line_total) VALUES (:order_id, :product_id, :product_title_ar, :product_title_en, :product_cover, :unit_price, :quantity, :line_total)');
+        $stmt = $pdo->prepare('INSERT INTO order_items (id, order_id, product_id, product_title_ar, product_title_en, product_cover, unit_price, quantity, line_total) VALUES (:id, :order_id, :product_id, :product_title_ar, :product_title_en, :product_cover, :unit_price, :quantity, :line_total)');
         $stmt->execute([
+            'id' => Database::uuid(),
             'order_id' => $orderId,
             'product_id' => $item['product_id'],
             'product_title_ar' => $item['product_title_ar'],
