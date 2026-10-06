@@ -3,3 +3,5 @@
 /* Fix: Cart drawer z-index must be higher than header (z-[100]) */
 .fixed.inset-0.z-50:has(aside) { z-index: 99999 !important; }
 div.fixed.inset-0.z-50 { z-index: 99999 !important; }
+
+header.sticky, header.z-[100] { z-index: 40 !important; }
